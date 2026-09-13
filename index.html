@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="docTitle">Santhwanam - Service Center</title>
+    <title id="docTitle">SKSSF Santhwanam - Service Center</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700;800&display=swap');
-        
         body { font-family: 'Noto Sans Malayalam', 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
         .hidden-view { display: none !important; }
         .text-brand-deep { color: #1e1b4b; } .bg-brand-deep { background-color: #1e1b4b; } .bg-brand-accent { background-color: #4f46e5; } .text-brand-accent { color: #4f46e5; }
 
-        /* Smooth Slider */
         .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
         .slider-container::-webkit-scrollbar { display: none; } 
         .slider-slide { flex: 0 0 100%; scroll-snap-align: start; }
@@ -23,8 +21,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } } .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } } .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
 
-        /* Custom Radio Buttons */
         .radio-filter:checked + label { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+        /* Dropdown Suggestion Box */
+        .autocomplete-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); z-index: 50; max-height: 150px; overflow-y: auto; margin-top: 4px; display: none; }
+        .autocomplete-item { padding: 10px 16px; font-size: 12px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .autocomplete-item:hover { background-color: #f8fafc; color: #4f46e5; font-weight: 600; }
+        .autocomplete-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body class="text-slate-800 h-screen w-full overflow-hidden flex flex-col bg-slate-50 relative">
@@ -37,7 +39,7 @@
                     <img id="appHeaderLogoImg" class="w-full h-full object-cover hidden" alt="Logo" onerror="this.classList.add('hidden'); document.getElementById('appHeaderIcon').classList.remove('hidden');">
                 </div>
                 <div>
-                    <h1 id="appHeaderTitle" class="text-base font-bold tracking-wide leading-tight">Santhwanam</h1>
+                    <h1 id="appHeaderTitle" class="text-base font-bold tracking-wide leading-tight">SKSSF Santhwanam</h1>
                     <p id="appHeaderSub" class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Service Center</p>
                 </div>
             </div>
@@ -85,13 +87,24 @@
                 </div>
 
                 <div id="section-tracking" class="px-4 py-8 mt-4 bg-white border-y border-slate-100">
-                    <div class="max-w-md mx-auto bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm">
+                    <div class="max-w-md mx-auto bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm relative">
                         <h3 class="font-bold text-slate-800 text-base mb-1 text-center" data-i18n="track_title">Track Status</h3>
-                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium" data-i18n="track_desc">Enter your Application ID and Phone Number.</p>
-                        <form onsubmit="handleTrackRequest(event)" class="space-y-3.5">
-                            <div><input type="text" id="trackAppId" required data-i18n="track_app_id" placeholder="Application ID" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent uppercase"></div>
-                            <div><input type="tel" id="trackPhone" required data-i18n="track_phone" placeholder="Phone Number" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent"></div>
-                            <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md hover:bg-slate-900 transition flex items-center justify-center gap-2">
+                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium" data-i18n="track_desc">Enter Phone Number first to search names.</p>
+                        <form onsubmit="handleTrackRequest(event)" class="space-y-3.5 relative">
+                            <!-- Hidden input to store selected App ID -->
+                            <input type="hidden" id="trackSelectedAppId">
+                            
+                            <div>
+                                <input type="tel" id="trackPhone" required pattern="[0-9]{10}" data-i18n="track_phone" placeholder="Phone Number (10 Digits)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
+                                <p id="trackPhoneMsg" class="text-[9px] text-brand-accent mt-1 hidden font-bold text-right"><i class="fa-solid fa-circle-check"></i> Phone Verified</p>
+                            </div>
+                            
+                            <div class="relative">
+                                <input type="text" id="trackName" disabled autocomplete="off" data-i18n="track_name" placeholder="Type first 3 letters of name..." class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent transition-colors disabled:opacity-60">
+                                <div id="nameSuggestions" class="autocomplete-dropdown"></div>
+                            </div>
+
+                            <button type="submit" id="btn-check-status" disabled class="w-full bg-slate-300 text-slate-500 py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 mt-2">
                                 <i class="fa-solid fa-magnifying-glass-location"></i> <span data-i18n="track_btn">Check Status</span>
                             </button>
                         </form>
@@ -157,12 +170,11 @@
                 </div>
 
                 <div class="max-w-xl mx-auto">
-                    <!-- Adjusted for object-contain -->
                     <div class="relative w-full bg-slate-100/50 aspect-square overflow-hidden border-b border-slate-100 group">
                         <div id="productDetailSlider" class="slider-container w-full h-full snap-x snap-mandatory flex items-center"></div>
                         <div id="sliderDots" class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none"></div>
                         <span id="detailStockBadge" class="absolute top-3 right-3 bg-white/90 px-2.5 py-1 rounded-lg shadow text-[10px] font-black text-green-600">Available</span>
-                        <!-- Slider Arrows -->
+                        
                         <button onclick="scrollSlider('productDetailSlider', -1)" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center backdrop-blur shadow opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-chevron-left"></i></button>
                         <button onclick="scrollSlider('productDetailSlider', 1)" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 text-white flex items-center justify-center backdrop-blur shadow opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
@@ -206,8 +218,8 @@
             </section>
 
             <footer class="text-center py-8 border-t border-slate-100 bg-white mt-auto pb-28">
-                <p id="footerCopyText" class="text-xs font-medium text-slate-400 mb-1" data-i18n="footer_copy">Copyright © 2026 Santhwanam Charity.</p>
-                <p id="footerAddrText" class="text-[10px] text-slate-400 max-w-xs mx-auto mb-5" data-i18n="footer_addr">Address: Santhwanam Center, Near Town Hall, Kerala.</p>
+                <p id="footerCopyText" class="text-xs font-medium text-slate-400 mb-1" data-i18n="footer_copy">Copyright © 2026 SKSSF Santhwanam.</p>
+                <p id="footerAddrText" class="text-[10px] text-slate-400 max-w-xs mx-auto mb-5" data-i18n="footer_addr">Address: SKSSF Center, Kerala.</p>
             </footer>
         </div>
 
@@ -269,8 +281,8 @@
         const translations = {
             en: {
                 hero_badge: "Community Service", hero_title: "A helping hand for the needy", hero_desc: "Request medical equipment and other services easily.",
-                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter your Application ID and Phone Number.",
-                track_app_id: "Application ID (Eg: SW-XXXX)", track_phone: "Phone Number", track_btn: "Check Status",
+                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter Phone Number first to search names.",
+                track_phone: "Phone Number (10 Digits)", track_name: "Type first 3 letters of name...", track_btn: "Check Status",
                 contact_title: "Contact Us", contact_wa: "WhatsApp Us", contact_wa_desc: "Message for queries", contact_call: "Call Us", contact_call_desc: "For emergencies",
                 inv_search: "Search...", inv_title: "Available Listings", details_title: "Details", lbl_av: "Stock Status", lbl_price: "Fee / Deposit",
                 adm_inv_desc: "Description", lbl_notes: "Notes", str_req_btn: "Request Assistance", nav_home: "Home", nav_srv: "Services",
@@ -280,11 +292,11 @@
             },
             ml: {
                 hero_badge: "സന്നദ്ധ സേവനം", hero_title: "രോഗികൾക്കും ആവശ്യക്കാർക്കും ഒരു കൈത്താങ്ങ്", hero_desc: "വീൽചെയർ, ബെഡ് തുടങ്ങിയവയും മറ്റ് സേവനങ്ങളും ആവശ്യപ്പെടാം.",
-                btn_browse_store: "സേവനങ്ങൾ കാണുക", track_title: "അപേക്ഷ പരിശോധിക്കുക", track_desc: "അപേക്ഷാ ഐഡിയും ഫോൺ നമ്പറും നൽകുക.",
-                track_app_id: "അപേക്ഷാ ID (ഉദാ: SW-XXXX)", track_phone: "ഫോൺ നമ്പർ", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
+                btn_browse_store: "സേവനങ്ങൾ കാണുക", track_title: "അപേക്ഷ പരിശോധിക്കുക", track_desc: "ഫോൺ നമ്പർ നൽകിയ ശേഷം പേര് തിരയുക.",
+                track_phone: "ഫോൺ നമ്പർ (10 അക്കം)", track_name: "പേരിന്റെ ആദ്യ 3 അക്ഷരം ടൈപ്പ് ചെയ്യുക...", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
                 contact_title: "ബന്ധപ്പെടുക", contact_wa: "വാട്സ്ആപ്പ്", contact_wa_desc: "വിവരങ്ങൾ അറിയാൻ", contact_call: "വിളിക്കുക", contact_call_desc: "അടിയന്തര ആവശ്യങ്ങൾക്ക്",
                 inv_search: "സെർച്ച് ചെയ്യുക...", inv_title: "ലഭ്യമായവ", details_title: "കൂടുതൽ വിവരങ്ങൾ", lbl_av: "സ്റ്റോക്ക്", lbl_price: "ഫീസ് / നിക്ഷേപം",
-                adm_inv_desc: "വിവരങ്ങൾ (Description)", lbl_notes: "നോട്സ്", str_req_btn: "അപേക്ഷ നൽകുക", nav_home: "ഹോം", nav_srv: "സേവനങ്ങൾ",
+                adm_inv_desc: "വിവരങ്ങൾ", lbl_notes: "നോട്സ്", str_req_btn: "അപേക്ഷ നൽകുക", nav_home: "ഹോം", nav_srv: "സേവനങ്ങൾ",
                 mod_req_title: "അപേക്ഷിക്കുക", mod_req_sub: "വിവരങ്ങൾ നൽകുക.", mod_req_pname: "പേര് *", mod_req_phone: "ഫോൺ നമ്പർ *",
                 mod_req_loc: "സ്ഥലം *", mod_req_dur: "കാലയളവ് *", str_avail: "ലഭ്യമാണ്", str_out: "സ്റ്റോക്കില്ല",
                 flt_all: "എല്ലാം", flt_eq: "ഉപകരണങ്ങൾ", flt_srv: "സേവനങ്ങൾ", type_eq: "ഉപകരണം", type_srv: "സേവനം"
@@ -295,6 +307,7 @@
         let inventoryData = [];
         let appSettings = {};
         let activeDetailItem = null;
+        let fetchedTrackingRequests = []; // For autocomplete
 
         window.setLanguage = function(lang) {
             currentLang = lang;
@@ -445,15 +458,12 @@
             document.getElementById('detailItemType').innerText = item.itemType === 'service' ? t('type_srv') : t('type_eq');
             document.getElementById('detailItemDesc').innerText = item.desc || 'No detailed description provided.';
             
-            // Stock Update (Available / Total)
             document.getElementById('detailAvailableQty').innerText = `${available} / ${item.totalQty}`;
             
-            // Fee Logic
             const feeBox = document.getElementById('detailFeeBox');
             if(item.fee && item.fee.trim() !== '') { feeBox.classList.remove('hidden-view'); document.getElementById('detailFeeText').innerText = item.fee; } 
             else { feeBox.classList.add('hidden-view'); }
 
-            // Notes Logic (Bullet Points)
             const notesContainer = document.getElementById('detailNotesContainer');
             if(item.notes && item.notes.trim() !== '') {
                 notesContainer.classList.remove('hidden-view');
@@ -461,7 +471,6 @@
                 document.getElementById('detailNotesList').innerHTML = points;
             } else { notesContainer.classList.add('hidden-view'); }
             
-            // Badge Logic
             const badge = document.getElementById('detailStockBadge');
             if(available > 0) {
                 badge.innerText = t('str_avail'); badge.className = "absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-lg shadow text-[10px] font-black tracking-wide text-green-600 uppercase border border-green-100";
@@ -471,7 +480,6 @@
                 document.getElementById('btnDetailRequest').classList.add('hidden-view');
             }
 
-            // Slider Logic (object-contain)
             const images = item.imagesArray || [];
             const container = document.getElementById('productDetailSlider'); const dots = document.getElementById('sliderDots');
             container.innerHTML = ''; dots.innerHTML = '';
@@ -494,7 +502,7 @@
         };
 
         window.shareProduct = function() {
-            if (navigator.share && activeDetailItem) navigator.share({ title: `Santhwanam - ${activeDetailItem.name}`, url: window.location.href });
+            if (navigator.share && activeDetailItem) navigator.share({ title: `SKSSF Santhwanam - ${activeDetailItem.name}`, url: window.location.href });
             else showToast("Link copied!");
         };
 
@@ -516,52 +524,100 @@
                     appId: appIdStrGen, itemId: document.getElementById('reqItemId').value, itemName: document.getElementById('reqItemName').value,
                     reqName: document.getElementById('reqName').value, reqPhone: document.getElementById('reqPhone').value,
                     reqLoc: document.getElementById('reqLoc').value, reqDuration: document.getElementById('reqDuration').value,
-                    status: 'requested', createdAt: serverTimestamp() // Status changed to requested
+                    status: 'Item Request', createdAt: serverTimestamp() 
                 });
-                showToast(`Request Submitted! Your ID is ${appIdStrGen}`);
+                showToast(`Request Submitted! Tracking ID: ${appIdStrGen}`);
                 closeRequestModal(); navigateToUserPage('landing'); setTimeout(() => scrollToTracking(), 500);
-                document.getElementById('trackAppId').value = appIdStrGen; document.getElementById('trackPhone').value = document.getElementById('reqPhone').value;
             } catch (error) { showToast("Failed to submit request.", "error"); } 
             finally { btn.innerHTML = `Submit Request <i class="fa-solid fa-paper-plane ml-2"></i>`; btn.disabled = false; }
         };
 
-        window.handleTrackRequest = async function(e) {
-            e.preventDefault();
-            const appIdInput = document.getElementById('trackAppId').value.trim().toUpperCase();
-            const phoneInput = document.getElementById('trackPhone').value.trim();
-            const resultArea = document.getElementById('trackResultArea');
-            const btn = e.target.querySelector('button'); const origBtnHtml = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`; btn.disabled = true;
+        const trackPhoneInp = document.getElementById('trackPhone');
+        const trackNameInp = document.getElementById('trackName');
+        const nameSuggestions = document.getElementById('nameSuggestions');
+        const checkBtn = document.getElementById('btn-check-status');
+        const phoneMsg = document.getElementById('trackPhoneMsg');
+
+        // Phone Input Listener - Fetch requests for phone securely
+        trackPhoneInp.addEventListener('input', async (e) => {
+            const val = e.target.value.trim();
+            trackNameInp.disabled = true; trackNameInp.value = ''; nameSuggestions.style.display = 'none';
+            phoneMsg.classList.add('hidden'); checkBtn.disabled = true; document.getElementById('trackSelectedAppId').value = '';
+
+            if(val.length === 10) {
+                try {
+                    const q = query(reqRef, where("reqPhone", "==", val));
+                    const snap = await getDocs(q);
+                    fetchedTrackingRequests = snap.docs.map(d => d.data());
+                    
+                    if(fetchedTrackingRequests.length > 0) {
+                        trackNameInp.disabled = false; trackNameInp.classList.replace('bg-slate-100', 'bg-white');
+                        phoneMsg.classList.remove('hidden'); phoneMsg.innerText = "Phone matches found. Type name."; phoneMsg.className = "text-[9px] text-emerald-600 mt-1 font-bold text-right";
+                    } else {
+                        phoneMsg.classList.remove('hidden'); phoneMsg.innerText = "No requests found for this number."; phoneMsg.className = "text-[9px] text-red-500 mt-1 font-bold text-right";
+                    }
+                } catch(err) { console.error("Error fetching", err); }
+            } else { trackNameInp.classList.replace('bg-white', 'bg-slate-100'); }
+        });
+
+        // Name Input Listener - Show Autocomplete based on fetched data
+        trackNameInp.addEventListener('input', (e) => {
+            const val = e.target.value.trim().toLowerCase();
+            nameSuggestions.innerHTML = '';
+            checkBtn.disabled = true; document.getElementById('trackSelectedAppId').value = '';
             
-            try {
-                // Secure targeted fetch logic
-                const q = query(reqRef, where("appId", "==", appIdInput), where("reqPhone", "==", phoneInput));
-                const querySnapshot = await getDocs(q);
-                
-                resultArea.classList.remove('hidden-view');
-                if(querySnapshot.empty) { resultArea.innerHTML = `<div class="bg-red-50 border border-red-100 p-3 rounded-xl text-center"><p class="text-xs text-red-600 font-bold">No application found.</p></div>`; return; }
+            if(val.length >= 3) {
+                const matches = fetchedTrackingRequests.filter(r => r.reqName.toLowerCase().includes(val));
+                if(matches.length > 0) {
+                    matches.forEach(m => {
+                        const div = document.createElement('div');
+                        div.className = "autocomplete-item";
+                        div.innerHTML = `<span class="font-bold">${m.reqName}</span> <br><span class="text-[9px] text-slate-400">Item: ${m.itemName}</span>`;
+                        div.onclick = () => {
+                            trackNameInp.value = m.reqName;
+                            document.getElementById('trackSelectedAppId').value = m.appId;
+                            nameSuggestions.style.display = 'none';
+                            checkBtn.disabled = false; checkBtn.classList.replace('bg-slate-300', 'bg-slate-800'); checkBtn.classList.replace('text-slate-500', 'text-white');
+                        };
+                        nameSuggestions.appendChild(div);
+                    });
+                    nameSuggestions.style.display = 'block';
+                } else { nameSuggestions.style.display = 'none'; }
+            } else { nameSuggestions.style.display = 'none'; }
+        });
 
-                const req = querySnapshot.docs[0].data();
-                let statusHtml = '';
-                if(req.status === 'requested') statusHtml = `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Requested</span>`;
-                else if(req.status === 'pending') statusHtml = `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Pending</span>`;
-                else if(req.status === 'given') statusHtml = `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Given</span>`;
-                else if(req.status === 'returned') statusHtml = `<span class="bg-slate-200 text-slate-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Returned</span>`;
+        // Hide dropdown if clicked outside
+        document.addEventListener('click', (e) => { if (e.target !== trackNameInp) nameSuggestions.style.display = 'none'; });
 
-                const dateStr = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : 'N/A';
-                resultArea.innerHTML = `
-                    <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade">
-                        <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
-                            <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">App ID</p><p class="font-black text-slate-800 text-sm">${req.appId}</p></div>
-                            ${statusHtml}
-                        </div>
-                        <div class="space-y-1.5 text-xs">
-                            <p><span class="text-slate-500 font-medium">Item:</span> <span class="font-bold text-slate-800">${req.itemName}</span></p>
-                            <p><span class="text-slate-500 font-medium">Applicant:</span> <span class="font-bold text-slate-800">${req.reqName}</span></p>
-                            <p><span class="text-slate-500 font-medium">Applied:</span> <span class="font-bold text-slate-800">${dateStr}</span></p>
-                        </div>
-                    </div>`;
-            } catch(er) { showToast("Error tracking", "error"); } finally { btn.innerHTML = origBtnHtml; btn.disabled = false; }
+        // Final Tracking Check - Display the selected app ID data
+        window.handleTrackRequest = function(e) {
+            e.preventDefault();
+            const appId = document.getElementById('trackSelectedAppId').value;
+            const req = fetchedTrackingRequests.find(r => r.appId === appId);
+            const resultArea = document.getElementById('trackResultArea');
+            
+            if(!req) return;
+            
+            resultArea.classList.remove('hidden-view');
+            let statusHtml = '';
+            if(req.status === 'Item Request') statusHtml = `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Requested</span>`;
+            else if(req.status === 'Pending') statusHtml = `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Pending</span>`;
+            else if(req.status === 'Given') statusHtml = `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Given</span>`;
+            else if(req.status === 'Returned') statusHtml = `<span class="bg-slate-200 text-slate-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Returned</span>`;
+
+            const dateStr = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : 'N/A';
+            resultArea.innerHTML = `
+                <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade">
+                    <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
+                        <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">App ID</p><p class="font-black text-slate-800 text-sm">${req.appId}</p></div>
+                        ${statusHtml}
+                    </div>
+                    <div class="space-y-1.5 text-xs">
+                        <p><span class="text-slate-500 font-medium">Item:</span> <span class="font-bold text-slate-800">${req.itemName}</span></p>
+                        <p><span class="text-slate-500 font-medium">Applicant:</span> <span class="font-bold text-slate-800">${req.reqName}</span></p>
+                        <p><span class="text-slate-500 font-medium">Applied:</span> <span class="font-bold text-slate-800">${dateStr}</span></p>
+                    </div>
+                </div>`;
         };
 
         window.onload = () => setLanguage('en');
