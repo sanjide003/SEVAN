@@ -19,6 +19,8 @@
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .radio-filter:checked + label { background-color: #4f46e5; color: white; border-color: #4f46e5; }
     </style>
 </head>
 <body class="text-slate-800 h-screen w-full overflow-hidden flex flex-col bg-slate-50 relative">
@@ -80,95 +82,84 @@
                     <button onclick="switchAdminTab('requests')" id="adm-tab-requests" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap relative">
                         <i class="fa-solid fa-inbox mr-1.5"></i>Requests<span id="adm-req-badge" class="absolute top-2 right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
                     </button>
-                    <button onclick="switchAdminTab('inventory')" id="adm-tab-inventory" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"><i class="fa-solid fa-boxes-stacked mr-1.5"></i>Inventory</button>
-                    <button onclick="switchAdminTab('services')" id="adm-tab-services" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"><i class="fa-solid fa-hand-holding-heart mr-1.5"></i>Services</button>
+                    <button onclick="switchAdminTab('inventory')" id="adm-tab-inventory" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"><i class="fa-solid fa-plus-circle mr-1.5"></i>Add Item/Service</button>
+                    <button onclick="switchAdminTab('stock')" id="adm-tab-stock" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"><i class="fa-solid fa-boxes-stacked mr-1.5"></i>Current Stock</button>
                     <button onclick="switchAdminTab('settings')" id="adm-tab-settings" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"><i class="fa-solid fa-sliders mr-1.5"></i>Settings</button>
                 </div>
             </div>
 
             <div class="max-w-6xl mx-auto w-full p-4 md:p-6">
-                <!-- Overview -->
                 <div id="adm-sec-overview" class="animate-fade">
                     <h2 class="text-base font-bold text-slate-800 mb-3">Overview</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-envelope-open-text text-xl text-blue-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-new-req">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">New Requests</p></div>
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-box-open text-xl text-indigo-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-tot-items">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Total Items</p></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-hand-holding-hand text-xl text-emerald-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-issued">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Issued</p></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-hand-holding-hand text-xl text-emerald-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-issued">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Issued/Given</p></div>
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-boxes-packing text-xl text-amber-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-avail">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Available</p></div>
                     </div>
                 </div>
 
-                <!-- Requests -->
                 <div id="adm-sec-requests" class="hidden-view animate-fade">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
                         <h2 class="text-base font-bold text-slate-800">Manage Requests</h2>
-                        <select id="reqFilterSelect" onchange="renderAdminRequests()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm font-semibold text-slate-700 focus:outline-none">
-                            <option value="all">All Requests</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="issued">Issued</option><option value="returned">Returned</option>
-                        </select>
+                        <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200 w-full md:w-auto overflow-x-auto">
+                            <input type="radio" name="reqFilter" id="rFltAll" value="all" checked class="hidden radio-filter" onchange="renderAdminRequests()">
+                            <label for="rFltAll" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">All</label>
+                            
+                            <input type="radio" name="reqFilter" id="rFltReq" value="requested" class="hidden radio-filter" onchange="renderAdminRequests()">
+                            <label for="rFltReq" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Requested</label>
+                            
+                            <input type="radio" name="reqFilter" id="rFltPen" value="pending" class="hidden radio-filter" onchange="renderAdminRequests()">
+                            <label for="rFltPen" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Pending</label>
+
+                            <input type="radio" name="reqFilter" id="rFltGiv" value="given" class="hidden radio-filter" onchange="renderAdminRequests()">
+                            <label for="rFltGiv" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Given</label>
+
+                            <input type="radio" name="reqFilter" id="rFltRet" value="returned" class="hidden radio-filter" onchange="renderAdminRequests()">
+                            <label for="rFltRet" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Returned</label>
+                        </div>
                     </div>
                     <div id="adminRequestsContainer" class="space-y-3"></div>
                 </div>
 
-                <!-- Inventory -->
                 <div id="adm-sec-inventory" class="hidden-view animate-fade space-y-6">
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-circle-plus mr-2 text-brand-accent"></i> <span id="invFormTitle">Add New Equipment</span></h3>
+                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-circle-plus mr-2 text-brand-accent"></i> <span id="invFormTitle">Add New Listing</span></h3>
                         <form id="invForm" onsubmit="handleInventorySubmit(event)" class="space-y-3 text-xs">
                             <input type="hidden" id="editInvId">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div><label class="block font-semibold text-slate-600 mb-1">Name *</label><input type="text" id="invName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">Listing Type *</label>
+                                    <select id="invType" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent">
+                                        <option value="equipment">Equipment (Wheelchair, Bed etc)</option>
+                                        <option value="service">Service (Ambulance, Care etc)</option>
+                                    </select>
+                                </div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">Name / Title *</label><input type="text" id="invName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <div><label class="block font-semibold text-slate-600 mb-1">Total Quantity *</label><input type="number" id="invTotal" required min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
+                                    <div><label class="block font-semibold text-slate-600 mb-1">Total Quantity *</label><input type="number" id="invTotal" required min="1" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
                                     <div><label class="block font-semibold text-slate-600 mb-1">Fee / Deposit (Optional)</label><input type="text" id="invFee" placeholder="Eg: ₹500" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block font-semibold text-slate-600 mb-1">Product Images (Max 200KB per image)</label>
+                                    <label class="block font-semibold text-slate-600 mb-1">Images (Auto-compress < 200KB)</label>
                                     <input type="file" id="invImgInput" accept="image/*" onchange="handleAddInvImage(event)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent mb-2">
                                     <div id="invImgPreviewArea" class="flex flex-wrap gap-2 empty:hidden"></div>
                                 </div>
                                 <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1">Description</label><textarea id="invDesc" rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></textarea></div>
-                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1">Bullet Notes (Enter new line for each point)</label><textarea id="invNotes" rows="3" placeholder="Condition 1&#10;Condition 2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></textarea></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1">Notes (Enter new line for each bullet point)</label><textarea id="invNotes" rows="3" placeholder="Point 1&#10;Point 2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></textarea></div>
                             </div>
                             <div class="flex gap-2 mt-3">
                                 <button type="button" onclick="resetInvForm()" class="hidden-view px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold" id="btn-cancel-inv">Cancel Edit</button>
-                                <button type="submit" id="btn-save-inv" class="flex-1 bg-brand-deep text-white py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition">Save Equipment</button>
+                                <button type="submit" id="btn-save-inv" class="flex-1 bg-brand-deep text-white py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition">Save Listing</button>
                             </div>
                         </form>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-3">Current Stock</h3>
-                        <div id="adminInventoryList" class="space-y-3"></div>
-                    </div>
                 </div>
 
-                <!-- Services -->
-                <div id="adm-sec-services" class="hidden-view animate-fade space-y-6">
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-circle-plus mr-2 text-brand-accent"></i> <span id="srvFormTitle">Add New Service</span></h3>
-                        <form id="srvForm" onsubmit="handleServiceSubmit(event)" class="space-y-3 text-xs">
-                            <input type="hidden" id="editSrvId">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div><label class="block font-semibold text-slate-600 mb-1">Service Title *</label><input type="text" id="srvTitle" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
-                                <div>
-                                    <label class="block font-semibold text-slate-600 mb-1">Cover Image</label>
-                                    <input type="file" id="srvImgInput" accept="image/*" onchange="handleSrvImageChange(event)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-                                    <div id="srvImgPreview" class="mt-2 hidden"></div>
-                                </div>
-                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1">Description *</label><textarea id="srvDesc" required rows="3" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></textarea></div>
-                            </div>
-                            <div class="flex gap-2 mt-3">
-                                <button type="button" onclick="resetSrvForm()" class="hidden-view px-4 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold" id="btn-cancel-srv">Cancel Edit</button>
-                                <button type="submit" id="btn-save-srv" class="flex-1 bg-brand-deep text-white py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition">Save Service</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-sm mb-3">Active Services</h3>
-                        <div id="adminServicesList" class="space-y-3"></div>
-                    </div>
+                <div id="adm-sec-stock" class="hidden-view animate-fade space-y-4">
+                    <h2 class="text-base font-bold text-slate-800">Current Stock & Usage</h2>
+                    <div id="adminStockGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
 
-                <!-- Settings -->
                 <div id="adm-sec-settings" class="hidden-view animate-fade space-y-6">
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-mobile-screen mr-2 text-brand-accent"></i> Application Settings</h3>
@@ -191,8 +182,7 @@
                     </div>
 
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-images mr-2 text-brand-accent"></i> Landing Page Slider Images</h3>
-                        <p class="text-[10px] text-slate-500 mb-3">Upload images for the public landing page. (Auto compressed to < 200KB. Base64 Storage limit 1MB per document).</p>
+                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2"><i class="fa-solid fa-images mr-2 text-brand-accent"></i> Landing Page Slider</h3>
                         <div class="flex flex-col md:flex-row gap-3">
                             <input type="file" id="sliderImgInput" accept="image/*" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
                             <button onclick="uploadSliderImage()" id="btn-upload-slider" class="shrink-0 bg-brand-accent text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 transition flex items-center justify-center gap-2"><i class="fa-solid fa-upload"></i> Upload</button>
@@ -207,6 +197,7 @@
         </section>
     </main>
 
+    <!-- Confirmation Modal -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl text-center">
             <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100"><i class="fa-solid fa-triangle-exclamation text-2xl"></i></div>
@@ -219,31 +210,56 @@
         </div>
     </div>
 
+    <!-- Request Edit Modal -->
+    <div id="requestEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
+            <h3 class="font-bold text-slate-900 text-sm mb-4 border-b border-slate-100 pb-2">Edit Request Details</h3>
+            <form id="editReqForm" onsubmit="handleRequestEditSubmit(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="editReqId">
+                <div><label class="block font-semibold text-slate-600 mb-1">Applicant Name</label><input type="text" id="erName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                <div><label class="block font-semibold text-slate-600 mb-1">Phone Number</label><input type="text" id="erPhone" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                <div><label class="block font-semibold text-slate-600 mb-1">Location</label><input type="text" id="erLoc" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                <div><label class="block font-semibold text-slate-600 mb-1">Duration</label><input type="text" id="erDur" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                <div class="flex gap-3 mt-4">
+                    <button type="button" onclick="closeRequestEditModal()" class="w-1/2 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" id="btn-save-req" class="w-1/2 bg-brand-accent text-white py-3 rounded-xl font-bold shadow-md">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock Users Modal -->
+    <div id="stockUsersModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-900 text-sm">Usage History</h3>
+                <button onclick="closeStockUsersModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="stockUsersList" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+        </div>
+    </div>
+
     <div id="toastContainer" class="fixed top-5 left-0 right-0 z-[120] flex flex-col items-center pointer-events-none space-y-2 px-4"></div>
 
     <script type="module">
-        import { auth, db, invRef, reqRef, setRef, srvRef } from './firebase_configuration.js';
+        import { auth, db, invRef, reqRef, setRef } from './firebase_configuration.js';
         import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let currentLang = 'en';
         let inventoryData = [];
         let requestsData = [];
-        let servicesData = [];
         let appSettings = {};
         let isAdminLoggedIn = false;
         
         let tempInvImages = []; // Array of {url: base64, size: kb}
         let tempLogo = null;
-        let tempSrvImg = null;
-
         const appIdStr = "charity_v3_demo"; 
 
         window.setLanguage = function(lang) { currentLang = lang; };
 
         window.showToast = function(message, type = 'success') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
+            const container = document.getElementById('toastContainer'); const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-slate-900' : 'bg-red-600';
             const icon = type === 'success' ? 'fa-check-circle text-emerald-400' : 'fa-circle-exclamation text-white';
             toast.className = `${bgColor} text-white px-5 py-3 rounded-full shadow-xl text-xs font-medium flex items-center gap-3 toast-animate pointer-events-auto`;
@@ -252,11 +268,13 @@
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
+        // Confirmation Modal Logic
         let confirmCallback = null;
         window.openConfirmModal = function(title, message, callback) { document.getElementById('confirmTitle').innerText = title; document.getElementById('confirmMessage').innerText = message; confirmCallback = callback; document.getElementById('confirmModal').classList.remove('hidden-view'); };
         window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.add('hidden-view'); confirmCallback = null; };
         document.getElementById('confirmActionBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
 
+        // Auth Listener
         onAuthStateChanged(auth, (user) => {
             if (user && !user.isAnonymous) {
                 isAdminLoggedIn = true;
@@ -274,18 +292,15 @@
         });
 
         window.handleAdminLogin = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-admin-login'); const originalHtml = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+            e.preventDefault(); const btn = document.getElementById('btn-admin-login'); const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
             try { await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value); } 
-            catch (error) { showToast("Authentication Failed", "error"); btn.innerHTML = originalHtml; }
+            catch (error) { showToast("Login Failed", "error"); btn.innerHTML = originalHtml; }
         };
 
-        window.logoutAdmin = function() {
-            openConfirmModal("Logout", "End admin session?", () => { signOut(auth).then(() => { document.getElementById('adminEmail').value = ''; document.getElementById('adminPass').value = ''; showToast("Logged out"); }); });
-        };
+        window.logoutAdmin = function() { openConfirmModal("Logout", "End session?", () => signOut(auth).then(() => showToast("Logged out"))); };
 
-        // --- Compression Utility (Returns Data URL & Size KB) ---
+        // Compression Utility
         async function compressImageToBase64(file, maxSizeKB = 200) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader(); reader.readAsDataURL(file);
@@ -301,8 +316,7 @@
                         let sizeKb = Math.round((dataUrl.length * 3) / 4 / 1024);
                         
                         while (sizeKb > maxSizeKB && quality > 0.1) {
-                            quality -= 0.1;
-                            dataUrl = canvas.toDataURL('image/jpeg', quality);
+                            quality -= 0.1; dataUrl = canvas.toDataURL('image/jpeg', quality);
                             sizeKb = Math.round((dataUrl.length * 3) / 4 / 1024);
                         }
                         resolve({ dataUrl, sizeKb });
@@ -311,7 +325,7 @@
             });
         }
 
-        // --- Fetch Data ---
+        // Fetch Data
         onSnapshot(setRef, (docSnap) => {
             if (docSnap.exists()) {
                 appSettings = docSnap.data();
@@ -321,10 +335,8 @@
                 if(document.getElementById('setPhone')) document.getElementById('setPhone').value = appSettings.phone || '';
                 if(document.getElementById('setWa')) document.getElementById('setWa').value = appSettings.whatsapp || '';
                 if(document.getElementById('setAddr')) document.getElementById('setAddr').value = appSettings.address || '';
-                
                 tempLogo = appSettings.logoUrl ? { dataUrl: appSettings.logoUrl, sizeKb: Math.round((appSettings.logoUrl.length*3)/4/1024) } : null;
-                renderLogoPreview();
-                renderAdminSliderPreview();
+                renderLogoPreview(); renderAdminSliderPreview();
             }
         });
 
@@ -332,237 +344,181 @@
             inventoryData = []; let total = 0, avail = 0, issued = 0;
             snapshot.forEach(doc => { const data = doc.data(); inventoryData.push({ id: doc.id, ...data }); total += data.totalQty || 0; issued += data.issuedQty || 0; avail += (data.totalQty || 0) - (data.issuedQty || 0); });
             document.getElementById('stat-tot-items').innerText = total; document.getElementById('stat-issued').innerText = issued; document.getElementById('stat-avail').innerText = avail;
-            if (isAdminLoggedIn) renderAdminInventory();
-        });
-
-        onSnapshot(srvRef, (snapshot) => {
-            servicesData = [];
-            snapshot.forEach(doc => { servicesData.push({ id: doc.id, ...doc.data() }); });
-            if (isAdminLoggedIn) renderAdminServices();
+            if (isAdminLoggedIn) renderAdminStock(); // Update stock tab
         });
 
         onSnapshot(reqRef, (snapshot) => {
             requestsData = [];
             snapshot.forEach(doc => requestsData.push({ id: doc.id, ...doc.data() }));
             requestsData.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-            const newReqs = requestsData.filter(r => r.status === 'pending').length;
+            const newReqs = requestsData.filter(r => r.status === 'requested').length;
             document.getElementById('stat-new-req').innerText = newReqs;
             const badge = document.getElementById('adm-req-badge');
             if(newReqs > 0) { badge.innerText = newReqs; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
-            if (isAdminLoggedIn) renderAdminRequests();
+            if (isAdminLoggedIn) { renderAdminRequests(); renderAdminStock(); }
         });
 
-        // --- Tabs ---
         window.switchAdminTab = function(tab) {
-            ['overview', 'requests', 'inventory', 'services', 'settings'].forEach(t => { document.getElementById(`adm-sec-${t}`).classList.add('hidden-view'); document.getElementById(`adm-tab-${t}`).className = "px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"; });
+            ['overview', 'requests', 'inventory', 'stock', 'settings'].forEach(t => { document.getElementById(`adm-sec-${t}`).classList.add('hidden-view'); document.getElementById(`adm-tab-${t}`).className = "px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"; });
             document.getElementById(`adm-sec-${tab}`).classList.remove('hidden-view'); document.getElementById(`adm-tab-${tab}`).className = "px-5 py-3.5 text-xs font-bold text-brand-accent border-b-2 border-brand-accent whitespace-nowrap";
         };
 
-        // --- Settings / Logo / Slider ---
-        window.handleLogoChange = async function(e) {
-            if(!e.target.files || e.target.files.length === 0) return;
-            try { tempLogo = await compressImageToBase64(e.target.files[0], 200); renderLogoPreview(); } catch(e) { showToast("Error processing logo", "error"); }
-        }
+        // Logo & Settings Upload logic...
+        window.handleLogoChange = async function(e) { if(!e.target.files || e.target.files.length === 0) return; try { tempLogo = await compressImageToBase64(e.target.files[0], 200); renderLogoPreview(); } catch(e) { showToast("Error", "error"); } }
         function renderLogoPreview() {
             const preview = document.getElementById('logoImgPreview');
             if(tempLogo && tempLogo.dataUrl) {
-                preview.innerHTML = `<div class="relative w-16 h-16 rounded border border-slate-200"><img src="${tempLogo.dataUrl}" class="w-full h-full object-cover rounded"><div class="absolute -bottom-5 left-0 w-full text-center text-[9px] text-slate-500 font-bold">${tempLogo.sizeKb} KB</div><button type="button" onclick="tempLogo=null; renderLogoPreview();" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div>`;
-                preview.classList.remove('hidden');
+                preview.innerHTML = `<div class="relative w-16 h-16 rounded border border-slate-200"><img src="${tempLogo.dataUrl}" class="w-full h-full object-cover rounded"><div class="absolute -bottom-5 left-0 w-full text-center text-[9px] text-slate-500 font-bold">${tempLogo.sizeKb} KB</div><button type="button" onclick="tempLogo=null; renderLogoPreview();" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div>`; preview.classList.remove('hidden');
             } else { preview.innerHTML = ''; preview.classList.add('hidden'); }
         }
 
         window.handleSaveSettings = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-settings'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+            e.preventDefault(); const btn = document.getElementById('btn-save-settings'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
             try {
-                await setDoc(setRef, {
-                    title: document.getElementById('setAppTitle').value, sub: document.getElementById('setAppSub').value, 
-                    logoUrl: tempLogo ? tempLogo.dataUrl : "", heroText: document.getElementById('setHeroTitle').value, 
-                    phone: document.getElementById('setPhone').value, whatsapp: document.getElementById('setWa').value,
-                    address: document.getElementById('setAddr').value, sliderImages: appSettings.sliderImages || []
-                }, { merge: true });
-                showToast("Settings Updated!");
-            } catch (error) { showToast("Error saving settings", "error"); } finally { btn.innerHTML = "Save Settings"; }
+                await setDoc(setRef, { title: document.getElementById('setAppTitle').value, sub: document.getElementById('setAppSub').value, logoUrl: tempLogo ? tempLogo.dataUrl : "", heroText: document.getElementById('setHeroTitle').value, phone: document.getElementById('setPhone').value, whatsapp: document.getElementById('setWa').value, address: document.getElementById('setAddr').value, sliderImages: appSettings.sliderImages || [] }, { merge: true });
+                showToast("Updated!");
+            } catch (error) { showToast("Error", "error"); } finally { btn.innerHTML = "Save Settings"; }
         };
 
         window.uploadSliderImage = async function() {
-            const input = document.getElementById('sliderImgInput');
-            if(!input.files || input.files.length === 0) return showToast("Select an image", "error");
-            const btn = document.getElementById('btn-upload-slider'); const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`; btn.disabled = true;
-            try {
-                const result = await compressImageToBase64(input.files[0], 200);
-                const currentImages = appSettings.sliderImages || []; currentImages.push(result.dataUrl);
-                await setDoc(setRef, { sliderImages: currentImages }, { merge: true });
-                showToast(`Uploaded! (${result.sizeKb} KB)`); input.value = '';
-            } catch (error) { showToast("Upload failed", "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+            const input = document.getElementById('sliderImgInput'); if(!input.files || input.files.length === 0) return showToast("Select image", "error");
+            const btn = document.getElementById('btn-upload-slider'); const origText = btn.innerHTML; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`; btn.disabled = true;
+            try { const res = await compressImageToBase64(input.files[0], 200); const curImgs = appSettings.sliderImages || []; curImgs.push(res.dataUrl); await setDoc(setRef, { sliderImages: curImgs }, { merge: true }); showToast("Uploaded"); input.value = ''; } 
+            catch (error) { showToast("Upload failed", "error"); } finally { btn.innerHTML = origText; btn.disabled = false; }
         };
-
-        window.deleteSliderImage = async function(index) {
-            openConfirmModal("Delete Image", "Remove this slider image?", async () => {
-                try { let currentImages = appSettings.sliderImages || []; currentImages.splice(index, 1); await setDoc(setRef, { sliderImages: currentImages }, { merge: true }); showToast("Removed"); } 
-                catch (error) { showToast("Error", "error"); }
-            });
-        };
-
+        window.deleteSliderImage = function(index) { openConfirmModal("Delete", "Remove slider image?", async () => { try { let curImgs = appSettings.sliderImages || []; curImgs.splice(index, 1); await setDoc(setRef, { sliderImages: curImgs }, { merge: true }); showToast("Removed"); } catch (error) { showToast("Error", "error"); } }); };
         window.renderAdminSliderPreview = function() {
-            const container = document.getElementById('adminSliderPreview'); container.innerHTML = '';
-            const images = appSettings.sliderImages || [];
-            if(images.length === 0) { container.innerHTML = `<span class="text-xs text-slate-400">No images</span>`; return; }
-            images.forEach((img, idx) => {
-                const sizeKb = Math.round((img.length * 3)/4/1024);
-                container.innerHTML += `<div class="relative w-24 h-20 shrink-0"><div class="w-full h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"><img src="${img}" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[9px] text-center text-slate-500 font-bold mt-1">${sizeKb} KB</p></div>`;
-            });
+            const container = document.getElementById('adminSliderPreview'); container.innerHTML = ''; const imgs = appSettings.sliderImages || [];
+            if(imgs.length === 0) { container.innerHTML = `<span class="text-xs text-slate-400">No images</span>`; return; }
+            imgs.forEach((img, idx) => { const sizeKb = Math.round((img.length * 3)/4/1024); container.innerHTML += `<div class="relative w-24 h-20 shrink-0"><div class="w-full h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"><img src="${img}" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[9px] text-center text-slate-500 font-bold mt-1">${sizeKb} KB</p></div>`; });
         };
 
-        // --- Inventory CRUD ---
+        // Unified Add Item Logic
         window.handleAddInvImage = async function(e) {
             if(!e.target.files || e.target.files.length === 0) return;
-            try {
-                const res = await compressImageToBase64(e.target.files[0], 200);
-                tempInvImages.push(res);
-                renderInvImages();
-                e.target.value = '';
-            } catch(er) { showToast("Error processing image", "error"); }
+            try { const res = await compressImageToBase64(e.target.files[0], 200); tempInvImages.push(res); renderInvImages(); e.target.value = ''; } 
+            catch(er) { showToast("Error", "error"); }
         };
-        
         window.removeInvImage = function(idx) { tempInvImages.splice(idx, 1); renderInvImages(); };
-        
         function renderInvImages() {
             const area = document.getElementById('invImgPreviewArea'); area.innerHTML = '';
-            tempInvImages.forEach((img, idx) => {
-                area.innerHTML += `<div class="relative w-16 h-20 shrink-0 mb-2"><div class="w-full h-16 rounded border border-slate-200 relative"><img src="${img.url || img.dataUrl}" class="w-full h-full object-cover rounded"><button type="button" onclick="removeInvImage(${idx})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div><p class="text-[9px] text-center font-bold text-slate-500 mt-0.5">${img.sizeKb || Math.round((img.url || img.dataUrl).length*3/4/1024)} KB</p></div>`;
-            });
+            tempInvImages.forEach((img, idx) => { area.innerHTML += `<div class="relative w-16 h-20 shrink-0 mb-2"><div class="w-full h-16 rounded border border-slate-200 relative"><img src="${img.url || img.dataUrl}" class="w-full h-full object-cover rounded"><button type="button" onclick="removeInvImage(${idx})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div><p class="text-[9px] text-center font-bold text-slate-500 mt-0.5">${img.sizeKb || Math.round((img.url || img.dataUrl).length*3/4/1024)} KB</p></div>`; });
         }
 
         window.handleInventorySubmit = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-inv'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`; btn.disabled = true;
+            e.preventDefault(); const btn = document.getElementById('btn-save-inv'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`; btn.disabled = true;
             const editId = document.getElementById('editInvId').value;
-            const payload = {
-                name: document.getElementById('invName').value, totalQty: parseInt(document.getElementById('invTotal').value),
-                fee: document.getElementById('invFee').value, desc: document.getElementById('invDesc').value, notes: document.getElementById('invNotes').value,
-                imagesArray: tempInvImages.map(i => i.url || i.dataUrl), 
-            };
-
+            const payload = { itemType: document.getElementById('invType').value, name: document.getElementById('invName').value, totalQty: parseInt(document.getElementById('invTotal').value), fee: document.getElementById('invFee').value, desc: document.getElementById('invDesc').value, notes: document.getElementById('invNotes').value, imagesArray: tempInvImages.map(i => i.url || i.dataUrl) };
             try {
                 if(editId) { await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', editId), payload); showToast("Updated!"); } 
                 else { payload.issuedQty = 0; payload.createdAt = serverTimestamp(); await addDoc(invRef, payload); showToast("Added!"); }
-                resetInvForm();
-            } catch (error) { showToast("Error saving", "error"); } finally { btn.innerHTML = "Save Equipment"; btn.disabled = false; }
+                resetInvForm(); switchAdminTab('stock');
+            } catch (error) { showToast("Error saving", "error"); } finally { btn.innerHTML = "Save Listing"; btn.disabled = false; }
         };
 
         window.editInventoryItem = function(id) {
             const item = inventoryData.find(i => i.id === id); if(!item) return;
             document.getElementById('editInvId').value = item.id;
+            document.getElementById('invType').value = item.itemType || 'equipment';
             document.getElementById('invName').value = item.name; document.getElementById('invTotal').value = item.totalQty;
             document.getElementById('invFee').value = item.fee || ''; document.getElementById('invDesc').value = item.desc || '';
             document.getElementById('invNotes').value = item.notes || '';
-            tempInvImages = (item.imagesArray || []).map(url => ({url: url, sizeKb: Math.round(url.length*3/4/1024)}));
-            renderInvImages();
-            document.getElementById('invFormTitle').innerText = "Edit Equipment";
-            document.getElementById('btn-cancel-inv').classList.remove('hidden-view');
-            document.getElementById('btn-save-inv').innerText = "Update Equipment";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            tempInvImages = (item.imagesArray || []).map(url => ({url: url, sizeKb: Math.round(url.length*3/4/1024)})); renderInvImages();
+            document.getElementById('invFormTitle').innerText = "Edit Listing"; document.getElementById('btn-cancel-inv').classList.remove('hidden-view'); document.getElementById('btn-save-inv').innerText = "Update Listing";
+            switchAdminTab('inventory');
         };
 
         window.resetInvForm = function() {
             document.getElementById('invForm').reset(); document.getElementById('editInvId').value = '';
             tempInvImages = []; renderInvImages();
-            document.getElementById('invFormTitle').innerText = "Add New Equipment";
-            document.getElementById('btn-cancel-inv').classList.add('hidden-view');
-            document.getElementById('btn-save-inv').innerText = "Save Equipment";
+            document.getElementById('invFormTitle').innerText = "Add New Listing"; document.getElementById('btn-cancel-inv').classList.add('hidden-view'); document.getElementById('btn-save-inv').innerText = "Save Listing";
         };
 
-        window.deleteInventoryItem = function(id) {
-            openConfirmModal("Delete Equipment", "Remove this item from catalog?", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); }
-            });
-        };
+        window.deleteInventoryItem = function(id) { openConfirmModal("Delete Listing", "Remove from database?", async () => { try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); } }); };
 
-        window.renderAdminInventory = function() {
-            const container = document.getElementById('adminInventoryList'); container.innerHTML = '';
-            if(inventoryData.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 p-4 bg-white rounded-xl">No items.</p>`; return; }
+        // Stock Tab Logic
+        window.renderAdminStock = function() {
+            const container = document.getElementById('adminStockGrid'); container.innerHTML = '';
+            if(inventoryData.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center"><p class="text-xs text-slate-400">No stock found.</p></div>`; return; }
+            
             inventoryData.forEach(item => {
                 const available = (item.totalQty || 0) - (item.issuedQty || 0);
-                container.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"><div class="flex-1"><h4 class="font-bold text-slate-800 text-sm leading-tight">${item.name}</h4><div class="flex flex-wrap gap-3 mt-1.5 text-[10px] font-bold"><span class="text-slate-500">Total: ${item.totalQty}</span><span class="text-brand-accent">Issued: ${item.issuedQty}</span><span class="text-emerald-600">Avail: ${available}</span></div></div><div class="flex gap-2 w-full sm:w-auto"><button onclick="editInventoryItem('${item.id}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-100 transition"><i class="fa-solid fa-pen mr-1"></i>Edit</button><button onclick="deleteInventoryItem('${item.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition shrink-0"><i class="fa-solid fa-trash-can text-xs"></i></button></div></div>`;
+                const mainImg = (item.imagesArray && item.imagesArray.length > 0) ? `<img src="${item.imagesArray[0]}" class="w-16 h-16 rounded-xl object-cover bg-slate-100">` : `<div class="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-box text-slate-300"></i></div>`;
+                
+                // Calculate historical usage (anyone who was 'given' or 'returned')
+                const totalUsers = requestsData.filter(r => r.itemId === item.id && (r.status === 'given' || r.status === 'returned')).length;
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between group relative">
+                        <div class="absolute top-4 right-4 text-slate-300 hover:text-red-500 cursor-pointer" onclick="deleteInventoryItem('${item.id}')"><i class="fa-solid fa-trash-can text-xs"></i></div>
+                        <div class="absolute top-4 right-10 text-slate-300 hover:text-blue-500 cursor-pointer" onclick="editInventoryItem('${item.id}')"><i class="fa-solid fa-pen text-xs"></i></div>
+                        
+                        <div class="flex gap-3 items-start mb-3">
+                            ${mainImg}
+                            <div class="pr-10">
+                                <span class="text-[8px] uppercase tracking-wide font-bold text-indigo-400">${item.itemType}</span>
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${item.name}</h4>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-center bg-slate-50 p-2 rounded-xl mb-3 border border-slate-100">
+                            <div><p class="text-[9px] font-bold text-slate-400">Total</p><p class="text-xs font-black text-slate-700">${item.totalQty}</p></div>
+                            <div><p class="text-[9px] font-bold text-slate-400">Given</p><p class="text-xs font-black text-brand-accent">${item.issuedQty || 0}</p></div>
+                            <div><p class="text-[9px] font-bold text-slate-400">Avail</p><p class="text-xs font-black text-emerald-600">${available}</p></div>
+                        </div>
+                        <button onclick="openStockUsers('${item.id}')" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl text-[10px] font-bold transition flex justify-center items-center gap-1"><i class="fa-solid fa-users"></i> History: ${totalUsers} Users</button>
+                    </div>`;
             });
         };
 
-        // --- Services CRUD ---
-        window.handleSrvImageChange = async function(e) {
-            if(!e.target.files || e.target.files.length === 0) return;
-            try { tempSrvImg = await compressImageToBase64(e.target.files[0], 200); renderSrvPreview(); } catch(e) { showToast("Error processing image", "error"); }
-        }
-        function renderSrvPreview() {
-            const preview = document.getElementById('srvImgPreview');
-            if(tempSrvImg && tempSrvImg.dataUrl) {
-                preview.innerHTML = `<div class="relative w-24 h-16 rounded border border-slate-200"><img src="${tempSrvImg.dataUrl}" class="w-full h-full object-cover rounded"><div class="absolute -bottom-5 left-0 w-full text-center text-[9px] text-slate-500 font-bold">${tempSrvImg.sizeKb} KB</div><button type="button" onclick="tempSrvImg=null; renderSrvPreview();" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div>`;
-                preview.classList.remove('hidden');
-            } else { preview.innerHTML = ''; preview.classList.add('hidden'); }
-        }
-
-        window.handleServiceSubmit = async function(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-save-srv'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`; btn.disabled = true;
-            const editId = document.getElementById('editSrvId').value;
-            const payload = { title: document.getElementById('srvTitle').value, desc: document.getElementById('srvDesc').value, image: tempSrvImg ? tempSrvImg.dataUrl : "" };
-            try {
-                if(editId) { await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'services_v3', editId), payload); showToast("Service Updated!"); } 
-                else { payload.createdAt = serverTimestamp(); await addDoc(srvRef, payload); showToast("Service Added!"); }
-                resetSrvForm();
-            } catch (error) { showToast("Error saving", "error"); } finally { btn.innerHTML = "Save Service"; btn.disabled = false; }
+        window.openStockUsers = function(itemId) {
+            const item = inventoryData.find(i => i.id === itemId); if(!item) return;
+            const container = document.getElementById('stockUsersList'); container.innerHTML = '';
+            
+            // Show all requests for this item that have progressed past pending
+            const users = requestsData.filter(r => r.itemId === itemId && (r.status === 'given' || r.status === 'returned'));
+            
+            if(users.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No usage history.</p>`; }
+            else {
+                users.forEach(u => {
+                    const statusBadge = u.status === 'given' ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase">Currently Using</span>` : `<span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-[9px] font-black uppercase">Returned</span>`;
+                    const dateStr = u.createdAt ? new Date(u.createdAt.toMillis()).toLocaleDateString() : 'N/A';
+                    container.innerHTML += `
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-slate-800 text-xs">${u.reqName}</p>
+                                <p class="text-[10px] text-slate-500">${u.reqPhone} • ${dateStr}</p>
+                            </div>
+                            ${statusBadge}
+                        </div>`;
+                });
+            }
+            document.getElementById('stockUsersModal').classList.remove('hidden-view');
         };
+        window.closeStockUsersModal = function() { document.getElementById('stockUsersModal').classList.add('hidden-view'); };
 
-        window.editService = function(id) {
-            const item = servicesData.find(i => i.id === id); if(!item) return;
-            document.getElementById('editSrvId').value = item.id;
-            document.getElementById('srvTitle').value = item.title; document.getElementById('srvDesc').value = item.desc || '';
-            tempSrvImg = item.image ? { dataUrl: item.image, sizeKb: Math.round(item.image.length*3/4/1024) } : null;
-            renderSrvPreview();
-            document.getElementById('srvFormTitle').innerText = "Edit Service"; document.getElementById('btn-cancel-srv').classList.remove('hidden-view'); document.getElementById('btn-save-srv').innerText = "Update Service"; window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.resetSrvForm = function() {
-            document.getElementById('srvForm').reset(); document.getElementById('editSrvId').value = '';
-            tempSrvImg = null; renderSrvPreview();
-            document.getElementById('srvFormTitle').innerText = "Add New Service"; document.getElementById('btn-cancel-srv').classList.add('hidden-view'); document.getElementById('btn-save-srv').innerText = "Save Service";
-        };
-
-        window.deleteService = function(id) {
-            openConfirmModal("Delete Service", "Remove this service from public view?", async () => {
-                try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'services_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); }
-            });
-        };
-
-        window.renderAdminServices = function() {
-            const container = document.getElementById('adminServicesList'); container.innerHTML = '';
-            if(servicesData.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 p-4 bg-white rounded-xl">No services added.</p>`; return; }
-            servicesData.forEach(item => {
-                container.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"><div class="flex items-center gap-3">${item.image ? `<img src="${item.image}" class="w-10 h-10 rounded-lg object-cover">` : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-handshake text-slate-400"></i></div>`}<div><h4 class="font-bold text-slate-800 text-sm leading-tight">${item.title}</h4></div></div><div class="flex gap-2 w-full sm:w-auto"><button onclick="editService('${item.id}')" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 font-bold text-xs hover:bg-blue-100 transition"><i class="fa-solid fa-pen mr-1"></i>Edit</button><button onclick="deleteService('${item.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition shrink-0"><i class="fa-solid fa-trash-can text-xs"></i></button></div></div>`;
-            });
-        };
-
-        // --- Requests logic ---
+        // Request Management & Edit Logic
         window.renderAdminRequests = function() {
-            const filter = document.getElementById('reqFilterSelect').value;
+            const filter = document.querySelector('input[name="reqFilter"]:checked').value;
             const container = document.getElementById('adminRequestsContainer'); container.innerHTML = '';
             let filteredReqs = filter !== 'all' ? requestsData.filter(r => r.status === filter) : requestsData;
             if(filteredReqs.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 p-4 text-center bg-white rounded-xl">No requests.</p>`; return; }
 
             filteredReqs.forEach(req => {
                 let actionsHtml = '', statusBadge = '';
-                if(req.status === 'pending') { statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Pending</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'approved')" class="flex-1 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold">Approve</button>`; }
-                else if(req.status === 'approved') { statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Approved</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'issued', '${req.itemId}')" class="flex-1 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold">Issue Item</button>`; }
-                else if(req.status === 'issued') { statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Issued</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'returned', '${req.itemId}')" class="flex-1 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-xs font-bold">Mark Returned</button>`; }
+                if(req.status === 'requested') { statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Item Request</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'pending')" class="flex-1 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold">Process (Pending)</button>`; }
+                else if(req.status === 'pending') { statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Pending</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'given', '${req.itemId}')" class="flex-1 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold">Mark Given</button>`; }
+                else if(req.status === 'given') { statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Given</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'returned', '${req.itemId}')" class="flex-1 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-xs font-bold">Mark Returned</button>`; }
                 else if(req.status === 'returned') { statusBadge = `<span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Returned</span>`; }
 
                 container.innerHTML += `
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                         <div class="flex justify-between items-start mb-2 pb-2 border-b border-slate-50"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">${req.appId}</p><h4 class="font-bold text-slate-800 text-sm mt-0.5">${req.itemName}</h4></div>${statusBadge}</div>
-                        <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 relative group">
+                            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition"><button onclick="openRequestEdit('${req.id}')" class="w-6 h-6 bg-blue-100 text-blue-600 rounded-md flex items-center justify-center"><i class="fa-solid fa-pen text-[10px]"></i></button></div>
                             <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Patient</span> <span class="font-semibold text-slate-700">${req.reqName}</span></div>
                             <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Phone</span> <a href="tel:${req.reqPhone}" class="font-bold text-brand-accent underline">${req.reqPhone}</a></div>
+                            <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Location</span> <span class="font-semibold text-slate-700">${req.reqLoc}</span></div>
+                            <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Duration</span> <span class="font-semibold text-slate-700">${req.reqDuration}</span></div>
                         </div>
                         <div class="flex gap-2">${actionsHtml}<button onclick="deleteRequest('${req.id}')" class="w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 rounded-lg hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button></div>
                     </div>`;
@@ -571,21 +527,40 @@
 
         window.updateReqStatus = async function(reqId, newStatus, itemId = null) {
             try {
-                if(newStatus === 'issued' && itemId) {
+                if(newStatus === 'given' && itemId) {
                     const item = inventoryData.find(i => i.id === itemId);
-                    if(item) { if(((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) return showToast("Out of stock!", "error"); await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', itemId), { issuedQty: (item.issuedQty || 0) + 1 }); }
+                    if(item) { if(((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) return showToast("Out of stock!", "error"); await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', itemId), { issuedQty: increment(1) }); }
                 }
                 if(newStatus === 'returned' && itemId) {
                     const item = inventoryData.find(i => i.id === itemId);
-                    if(item && (item.issuedQty || 0) > 0) await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', itemId), { issuedQty: item.issuedQty - 1 });
+                    if(item && (item.issuedQty || 0) > 0) await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', itemId), { issuedQty: increment(-1) });
                 }
                 await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', reqId), { status: newStatus });
-                showToast(`Status updated to ${newStatus}`);
+                showToast(`Status updated`);
             } catch(e) { showToast("Error updating", "error"); }
         };
 
-        window.deleteRequest = function(id) { openConfirmModal("Delete Request", "Remove this request?", async () => { try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); } }); };
+        window.deleteRequest = function(id) { openConfirmModal("Delete Request", "Remove this request completely?", async () => { try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); } }); };
+
+        window.openRequestEdit = function(id) {
+            const req = requestsData.find(r => r.id === id); if(!req) return;
+            document.getElementById('editReqId').value = req.id;
+            document.getElementById('erName').value = req.reqName; document.getElementById('erPhone').value = req.reqPhone;
+            document.getElementById('erLoc').value = req.reqLoc; document.getElementById('erDur').value = req.reqDuration;
+            document.getElementById('requestEditModal').classList.remove('hidden-view');
+        };
+        window.closeRequestEditModal = function() { document.getElementById('requestEditModal').classList.add('hidden-view'); };
         
+        window.handleRequestEditSubmit = async function(e) {
+            e.preventDefault(); const btn = document.getElementById('btn-save-req'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`; btn.disabled = true;
+            try {
+                await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', document.getElementById('editReqId').value), {
+                    reqName: document.getElementById('erName').value, reqPhone: document.getElementById('erPhone').value, reqLoc: document.getElementById('erLoc').value, reqDuration: document.getElementById('erDur').value
+                });
+                showToast("Updated!"); closeRequestEditModal();
+            } catch (error) { showToast("Error", "error"); } finally { btn.innerHTML = "Update"; btn.disabled = false; }
+        };
+
         window.onload = () => setLanguage('en');
     </script>
 </body>
