@@ -16,10 +16,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const appIdStr = "charity_v3_demo"; 
-const invRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3');
-const reqRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3');
-const setRef = doc(db, 'artifacts', appIdStr, 'public', 'data', 'settings', 'app_settings');
-const srvRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'services_v3');
+// Unified Database Route Mapping (SKSSF)
+const rootPath = "SKSSF/charity_app";
 
-export { app, auth, db, invRef, reqRef, setRef, srvRef };
+const invRef = collection(db, `${rootPath}/inventory`);
+const reqRef = collection(db, `${rootPath}/requests`);
+const admRef = collection(db, `${rootPath}/admins`);
+const setRef = doc(db, `${rootPath}/settings/app_settings`);
+
+export { app, auth, db, invRef, reqRef, admRef, setRef, rootPath };
