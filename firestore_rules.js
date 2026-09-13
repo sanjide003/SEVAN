@@ -10,22 +10,24 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // 1. App Settings Rules
     match /artifacts/{appId}/public/data/settings/{document=**} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
+    // 2. Inventory & Services Unified Rules
     match /artifacts/{appId}/public/data/inventory_v3/{document=**} {
       allow read: if isAuthenticated();
       allow write: if isAdmin();
     }
 
+    // 3. Requests Rules
     match /artifacts/{appId}/public/data/requests_v3/{document=**} {
-      // FIX: Public users can only 'get' specific documents if they know the exact ID. 
-      // They can no longer 'list' all requests in the database (Massive Data Exposure Fixed).
+      // User can fetch specific data for tracking
       allow get: if isAuthenticated(); 
       allow create: if isAuthenticated(); 
-      // Admin has full control including listing all requests.
+      // Admin can list, edit, update status and delete
       allow list, update, delete: if isAdmin(); 
     }
   }
