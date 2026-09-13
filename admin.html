@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Santhwanam - Admin Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Noto Sans Malayalam', 'Inter', sans-serif; background-color: #f8fafc; scroll-behavior: smooth; }
+        .hidden-view { display: none !important; }
+        .text-brand-deep { color: #1e1b4b; } .bg-brand-deep { background-color: #1e1b4b; }
+        .bg-brand-accent { background-color: #4f46e5; } .text-brand-accent { color: #4f46e5; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen w-full overflow-hidden flex flex-col bg-slate-50 relative">
+
+    <header class="bg-brand-deep text-white shadow-md z-30 shrink-0 relative">
+        <div class="px-4 py-3 flex justify-between items-center max-w-6xl mx-auto w-full">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20"><i class="fa-solid fa-user-lock text-xl text-indigo-200"></i></div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide leading-tight">Admin Portal</h1>
+                    <p class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Santhwanam</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex bg-black/20 p-1 rounded-lg border border-white/10">
+                    <button id="btn-lang-en" onclick="setLanguage('en')" class="text-[10px] font-bold px-2 py-1 rounded bg-white text-brand-deep shadow-sm transition">EN</button>
+                    <button id="btn-lang-ml" onclick="setLanguage('ml')" class="text-[10px] font-bold px-2 py-1 rounded text-white/60 hover:text-white transition">ML</button>
+                </div>
+                <button id="btn-admin-exit" onclick="logoutAdmin()" class="hidden-view text-red-400 hover:text-red-300 text-sm font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-power-off"></i> <span class="hidden md:inline" data-i18n="logout_btn">Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full h-full relative overflow-y-auto bg-slate-50">
+        
+        <section id="view-login" class="flex flex-col items-center justify-center h-full bg-slate-50 px-4 transition-all">
+            <div class="bg-white p-7 md:p-8 rounded-3xl shadow-lg border border-slate-200 w-full max-w-sm text-center relative overflow-hidden animate-fade">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 text-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-200"><i class="fa-solid fa-user-lock text-2xl"></i></div>
+                <h3 class="font-extrabold text-slate-900 text-xl mb-1" data-i18n="login_title">Admin Portal</h3>
+                <p class="text-xs text-slate-500 mb-5 font-medium" data-i18n="login_desc">Firebase Email Authentication</p>
+                
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Admin Email</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <input type="email" id="adminEmail" required placeholder="admin@charity.com" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-sm focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Password</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <input type="password" id="adminPass" required placeholder="••••••••" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-sm focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-admin-login" class="w-full bg-gradient-to-r from-brand-deep to-indigo-900 text-white py-3.5 rounded-xl text-xs font-bold shadow-lg hover:shadow-indigo-500/30 transition flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i> <span data-i18n="login_btn">Login Securely</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="view-admin" class="hidden-view w-full min-h-full flex flex-col bg-slate-50 pb-24">
+            <div class="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm">
+                <div class="max-w-6xl mx-auto flex overflow-x-auto scrollbar-hide">
+                    <button onclick="switchAdminTab('overview')" id="adm-tab-overview" class="px-5 py-3.5 text-xs font-bold text-brand-accent border-b-2 border-brand-accent whitespace-nowrap" data-i18n="adm_tab_dash"><i class="fa-solid fa-chart-pie mr-1.5"></i>Dashboard</button>
+                    <button onclick="switchAdminTab('requests')" id="adm-tab-requests" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap relative">
+                        <i class="fa-solid fa-inbox mr-1.5"></i><span data-i18n="adm_tab_req">Requests</span><span id="adm-req-badge" class="absolute top-2 right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                    </button>
+                    <button onclick="switchAdminTab('inventory')" id="adm-tab-inventory" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap" data-i18n="adm_tab_inv"><i class="fa-solid fa-boxes-stacked mr-1.5"></i>Inventory</button>
+                    <button onclick="switchAdminTab('settings')" id="adm-tab-settings" class="px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap" data-i18n="adm_tab_settings"><i class="fa-solid fa-sliders mr-1.5"></i>Settings</button>
+                </div>
+            </div>
+
+            <div class="max-w-6xl mx-auto w-full p-4 md:p-6">
+                <!-- Overview -->
+                <div id="adm-sec-overview" class="animate-fade">
+                    <h2 class="text-base font-bold text-slate-800 mb-3" data-i18n="adm_ov_title">Overview</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-envelope-open-text text-xl text-blue-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-new-req">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="stat_new">New Requests</p></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-box-open text-xl text-indigo-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-tot-items">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="stat_tot">Total Items</p></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-hand-holding-hand text-xl text-emerald-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-issued">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="stat_issued">Issued</p></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-boxes-packing text-xl text-amber-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-avail">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide" data-i18n="stat_avail">Available</p></div>
+                    </div>
+                </div>
+
+                <!-- Requests -->
+                <div id="adm-sec-requests" class="hidden-view animate-fade">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-bold text-slate-800" data-i18n="adm_req_h2">Manage Requests</h2>
+                        <select id="reqFilterSelect" onchange="renderAdminRequests()" class="text-xs bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm font-semibold text-slate-700 focus:outline-none">
+                            <option value="all" data-i18n="flt_all">All Requests</option><option value="pending" data-i18n="flt_pen">Pending</option><option value="approved" data-i18n="flt_app">Approved</option><option value="issued" data-i18n="flt_iss">Issued</option><option value="returned" data-i18n="flt_ret">Returned</option>
+                        </select>
+                    </div>
+                    <div id="adminRequestsContainer" class="space-y-3"></div>
+                </div>
+
+                <!-- Inventory -->
+                <div id="adm-sec-inventory" class="hidden-view animate-fade space-y-6">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2" data-i18n="adm_inv_add_h3"><i class="fa-solid fa-circle-plus mr-2 text-brand-accent"></i> Add New Equipment</h3>
+                        <form onsubmit="handleAddInventoryItem(event)" class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_inv_name">Name *</label><input type="text" id="invName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_inv_qty">Quantity *</label><input type="number" id="invTotal" required min="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_inv_img">Image URLs</label><input type="text" id="invImages" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_inv_desc">Description</label><textarea id="invDesc" rows="3" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></textarea></div>
+                            </div>
+                            <button type="submit" id="btn-add-inv" class="w-full bg-brand-deep text-white py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition mt-2">Save Equipment</button>
+                        </form>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm mb-3">Current Stock</h3>
+                        <div id="adminInventoryList" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div id="adm-sec-settings" class="hidden-view animate-fade space-y-6">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2" data-i18n="adm_set_app"><i class="fa-solid fa-mobile-screen mr-2 text-brand-accent"></i> Application Settings</h3>
+                        <form onsubmit="handleSaveSettings(event)" class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_title">App Title</label><input type="text" id="setAppTitle" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_sub">App Subtitle</label><input type="text" id="setAppSub" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_logo">Logo URL</label><input type="url" id="setLogoUrl" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_hero">Hero Section Text</label><input type="text" id="setHeroTitle" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_phone">Contact Phone</label><input type="text" id="setPhone" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_wa">WhatsApp Number</label><input type="text" id="setWa" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                                <div class="md:col-span-2"><label class="block font-semibold text-slate-600 mb-1" data-i18n="adm_set_addr">Address Details</label><input type="text" id="setAddr" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                            </div>
+                            <button type="submit" id="btn-save-settings" class="w-full bg-brand-deep text-white py-3 rounded-xl font-bold shadow-md hover:bg-slate-900 transition mt-2">Save Settings</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-xs mb-3 flex items-center border-b border-slate-100 pb-2" data-i18n="adm_set_slider"><i class="fa-solid fa-images mr-2 text-brand-accent"></i> Landing Page Slider Images</h3>
+                        <p class="text-[10px] text-slate-500 mb-3" data-i18n="adm_set_slider_desc">Upload images for the public landing page. Images will be automatically compressed and uploaded to Firebase Storage.</p>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <input type="file" id="sliderImgInput" accept="image/*" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                            <button onclick="uploadSliderImage()" id="btn-upload-slider" class="shrink-0 bg-brand-accent text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 transition flex items-center justify-center gap-2"><i class="fa-solid fa-upload"></i> <span data-i18n="adm_set_slider_btn">Upload & Save</span></button>
+                        </div>
+                        <div class="mt-4 border-t border-slate-100 pt-3">
+                            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Current Images</h4>
+                            <div id="adminSliderPreview" class="flex flex-wrap gap-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals & Toasts -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xs rounded-3xl p-6 shadow-2xl text-center">
+            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100"><i class="fa-solid fa-triangle-exclamation text-2xl"></i></div>
+            <h3 class="font-bold text-slate-900 text-base mb-1.5" id="confirmTitle">Are you sure?</h3>
+            <p class="text-xs text-slate-500 mb-6" id="confirmMessage">Do you want to proceed?</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="w-1/2 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold text-xs hover:bg-slate-200 transition">Cancel</button>
+                <button id="confirmActionBtn" class="w-1/2 bg-red-500 text-white py-3 rounded-xl font-bold text-xs shadow-md hover:bg-red-600 transition">Proceed</button>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="fixed top-5 left-0 right-0 z-[120] flex flex-col items-center pointer-events-none space-y-2 px-4"></div>
+
+    <script type="module">
+        import { auth, db, invRef, reqRef, setRef } from './firebase_configuration.js';
+        import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const translations = {
+            en: { logout_btn: "Logout", login_title: "Admin Portal", login_desc: "Firebase Email Authentication", login_btn: "Login Securely", adm_tab_dash: "Dashboard", adm_tab_req: "Requests", adm_tab_inv: "Inventory", adm_tab_settings: "Settings", adm_ov_title: "Overview", stat_new: "New Requests", stat_tot: "Total Items", stat_issued: "Issued", stat_avail: "Available", adm_req_h2: "Manage Requests", flt_all: "All Requests", flt_pen: "Pending", flt_app: "Approved", flt_iss: "Issued", flt_ret: "Returned", adm_inv_add_h3: "Add New Equipment", adm_inv_name: "Name *", adm_inv_qty: "Quantity *", adm_inv_img: "Image URLs", adm_inv_desc: "Description", adm_set_app: "Application Settings", adm_set_title: "App Title", adm_set_sub: "App Subtitle", adm_set_logo: "Logo URL", adm_set_hero: "Hero Section Text", adm_set_phone: "Contact Phone", adm_set_wa: "WhatsApp Number", adm_set_addr: "Address Details", adm_set_slider: "Landing Page Slider Images", adm_set_slider_desc: "Upload images for the public landing page. Images will be automatically compressed and uploaded to Firebase Storage.", adm_set_slider_btn: "Upload & Save" },
+            ml: { logout_btn: "ലോഗ് ഔട്ട്", login_title: "അഡ്മിൻ പോർട്ടൽ", login_desc: "ഫയർബേസ് സെക്യൂരിറ്റി ലോഗിൻ", login_btn: "ലോഗിൻ ചെയ്യുക", adm_tab_dash: "ഡാഷ്‌ബോർഡ്", adm_tab_req: "അപേക്ഷകൾ", adm_tab_inv: "സ്റ്റോക്ക്", adm_tab_settings: "സെറ്റിംഗ്സ്", adm_ov_title: "വിവരങ്ങൾ", stat_new: "പുതിയ അപേക്ഷകൾ", stat_tot: "ആകെ ഉപകരണങ്ങൾ", stat_issued: "നൽകിയവ", stat_avail: "ലഭ്യമായവ", adm_req_h2: "അപേക്ഷകൾ കൈകാര്യം ചെയ്യുക", flt_all: "എല്ലാ അപേക്ഷകളും", flt_pen: "പുതിയവ", flt_app: "അംഗീകരിച്ചവ", flt_iss: "നൽകിയവ", flt_ret: "തിരികെ ലഭിച്ചവ", adm_inv_add_h3: "പുതിയ ഉപകരണം ചേർക്കുക", adm_inv_name: "പേര് *", adm_inv_qty: "എണ്ണം *", adm_inv_img: "ചിത്രങ്ങളുടെ URL", adm_inv_desc: "വിവരങ്ങൾ", adm_set_app: "ആപ്പ് സെറ്റിംഗ്സ്", adm_set_title: "ആപ്പിന്റെ പേര്", adm_set_sub: "സബ്ടൈറ്റിൽ", adm_set_logo: "ലോഗോ URL", adm_set_hero: "സ്വാഗത വാചകം", adm_set_phone: "ഫോൺ നമ്പർ", adm_set_wa: "വാട്സ്ആപ്പ് നമ്പർ", adm_set_addr: "വിലാസം", adm_set_slider: "ഹോം പേജ് സ്ലൈഡർ ചിത്രങ്ങൾ", adm_set_slider_desc: "ജനങ്ങൾക്ക് കാണാനുള്ള ചിത്രങ്ങൾ ഇവിടെ അപ്‌ലോഡ് ചെയ്യാം. സുരക്ഷിതമായി ഫയർബേസ് സ്റ്റോറേജിൽ സൂക്ഷിക്കപ്പെടും.", adm_set_slider_btn: "അപ്‌ലോഡ് ചെയ്യുക" }
+        };
+
+        let currentLang = 'en';
+        let inventoryData = [];
+        let requestsData = [];
+        let appSettings = {};
+        let isAdminLoggedIn = false;
+        const appIdStr = "charity_v3_demo"; 
+
+        window.setLanguage = function(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = translations[lang][key];
+                    else el.innerHTML = translations[lang][key];
+                }
+            });
+            document.getElementById('btn-lang-en').className = lang === 'en' ? "text-[10px] font-bold px-2 py-1 rounded bg-white text-brand-deep shadow-sm transition" : "text-[10px] font-bold px-2 py-1 rounded text-white/60 hover:text-white transition";
+            document.getElementById('btn-lang-ml').className = lang === 'ml' ? "text-[10px] font-bold px-2 py-1 rounded bg-white text-brand-deep shadow-sm transition" : "text-[10px] font-bold px-2 py-1 rounded text-white/60 hover:text-white transition";
+            if (isAdminLoggedIn && inventoryData.length >= 0) renderAdminInventory();
+        };
+
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-slate-900' : 'bg-red-600';
+            const icon = type === 'success' ? 'fa-check-circle text-emerald-400' : 'fa-circle-exclamation text-white';
+            toast.className = `${bgColor} text-white px-5 py-3 rounded-full shadow-xl text-xs font-medium flex items-center gap-3 toast-animate pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
+        };
+
+        let confirmCallback = null;
+        window.openConfirmModal = function(title, message, callback) { document.getElementById('confirmTitle').innerText = title; document.getElementById('confirmMessage').innerText = message; confirmCallback = callback; document.getElementById('confirmModal').classList.remove('hidden-view'); };
+        window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.add('hidden-view'); confirmCallback = null; };
+        document.getElementById('confirmActionBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && !user.isAnonymous) {
+                isAdminLoggedIn = true;
+                document.getElementById('view-login').classList.add('hidden-view');
+                document.getElementById('view-admin').classList.remove('hidden-view');
+                document.getElementById('btn-admin-exit').classList.remove('hidden-view');
+                switchAdminTab('overview');
+                showToast("Admin Session Active");
+            } else {
+                isAdminLoggedIn = false;
+                document.getElementById('view-login').classList.remove('hidden-view');
+                document.getElementById('view-admin').classList.add('hidden-view');
+                document.getElementById('btn-admin-exit').classList.add('hidden-view');
+            }
+        });
+
+        window.handleAdminLogin = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-admin-login');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value);
+            } catch (error) {
+                showToast("Authentication Failed", "error");
+                btn.innerHTML = originalHtml;
+            }
+        };
+
+        window.logoutAdmin = function() {
+            openConfirmModal("Logout", "End admin session?", () => {
+                signOut(auth).then(() => {
+                    document.getElementById('adminEmail').value = ''; document.getElementById('adminPass').value = '';
+                    showToast("Logged out");
+                });
+            });
+        };
+
+        onSnapshot(setRef, (docSnap) => {
+            if (docSnap.exists()) {
+                appSettings = docSnap.data();
+                if(document.getElementById('setAppTitle')) document.getElementById('setAppTitle').value = appSettings.title || '';
+                if(document.getElementById('setAppSub')) document.getElementById('setAppSub').value = appSettings.sub || '';
+                if(document.getElementById('setHeroTitle')) document.getElementById('setHeroTitle').value = appSettings.heroText || '';
+                if(document.getElementById('setPhone')) document.getElementById('setPhone').value = appSettings.phone || '';
+                if(document.getElementById('setWa')) document.getElementById('setWa').value = appSettings.whatsapp || '';
+                if(document.getElementById('setAddr')) document.getElementById('setAddr').value = appSettings.address || '';
+                if(document.getElementById('setLogoUrl')) document.getElementById('setLogoUrl').value = appSettings.logoUrl || '';
+                renderAdminSliderPreview();
+            }
+        });
+
+        onSnapshot(invRef, (snapshot) => {
+            inventoryData = [];
+            let total = 0, avail = 0, issued = 0;
+            snapshot.forEach(doc => {
+                const data = doc.data(); inventoryData.push({ id: doc.id, ...data });
+                total += data.totalQty || 0; issued += data.issuedQty || 0; avail += (data.totalQty || 0) - (data.issuedQty || 0);
+            });
+            document.getElementById('stat-tot-items').innerText = total; document.getElementById('stat-issued').innerText = issued; document.getElementById('stat-avail').innerText = avail;
+            if (isAdminLoggedIn) renderAdminInventory();
+        });
+
+        onSnapshot(reqRef, (snapshot) => {
+            requestsData = [];
+            snapshot.forEach(doc => requestsData.push({ id: doc.id, ...doc.data() }));
+            requestsData.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+            const newReqs = requestsData.filter(r => r.status === 'pending').length;
+            document.getElementById('stat-new-req').innerText = newReqs;
+            const badge = document.getElementById('adm-req-badge');
+            if(newReqs > 0) { badge.innerText = newReqs; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
+            if (isAdminLoggedIn) renderAdminRequests();
+        });
+
+        window.handleSaveSettings = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-settings'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+            try {
+                await setDoc(setRef, {
+                    title: document.getElementById('setAppTitle').value, sub: document.getElementById('setAppSub').value, logoUrl: document.getElementById('setLogoUrl').value,
+                    heroText: document.getElementById('setHeroTitle').value, phone: document.getElementById('setPhone').value, whatsapp: document.getElementById('setWa').value,
+                    address: document.getElementById('setAddr').value, sliderImages: appSettings.sliderImages || []
+                }, { merge: true });
+                showToast("Settings Updated!");
+            } catch (error) { showToast("Error saving settings", "error"); } finally { btn.innerHTML = "Save Settings"; }
+        };
+
+        // 200KB Compression Function
+        async function compressImageToBase64(file, maxSizeKB = 200) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image(); img.src = event.target.result;
+                    img.onload = () => {
+                        let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                        let width = img.width, height = img.height; const maxDim = 1000;
+                        if (width > maxDim || height > maxDim) { if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; } else { width = Math.round((width * maxDim) / height); height = maxDim; } }
+                        canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height);
+                        let quality = 0.9; let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        // Ensure Base64 string size stays below 200KB
+                        while (dataUrl.length * 0.75 > maxSizeKB * 1024 && quality > 0.1) { quality -= 0.1; dataUrl = canvas.toDataURL('image/jpeg', quality); }
+                        resolve(dataUrl);
+                    }; img.onerror = (error) => reject(error);
+                }; reader.onerror = (error) => reject(error);
+            });
+        }
+
+        // Direct Base64 Upload
+        window.uploadSliderImage = async function() {
+            const input = document.getElementById('sliderImgInput');
+            if(!input.files || input.files.length === 0) return showToast("Select an image", "error");
+            const btn = document.getElementById('btn-upload-slider'); const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`; btn.disabled = true;
+            try {
+                const base64Img = await compressImageToBase64(input.files[0], 200);
+                
+                const currentImages = appSettings.sliderImages || []; currentImages.push(base64Img);
+                await setDoc(setRef, { sliderImages: currentImages }, { merge: true });
+                showToast("Image Uploaded & Saved!"); input.value = '';
+            } catch (error) { 
+                console.error(error); showToast("Upload failed", "error"); 
+            } finally { btn.innerHTML = originalText; btn.disabled = false; }
+        };
+
+        window.deleteSliderImage = async function(index) {
+            openConfirmModal("Delete Image", "Remove this image?", async () => {
+                try { 
+                    let currentImages = appSettings.sliderImages || []; 
+                    currentImages.splice(index, 1); 
+                    await setDoc(setRef, { sliderImages: currentImages }, { merge: true });
+                    showToast("Removed"); 
+                } 
+                catch (error) { showToast("Error", "error"); }
+            });
+        };
+
+        window.renderAdminSliderPreview = function() {
+            const container = document.getElementById('adminSliderPreview'); container.innerHTML = '';
+            const images = appSettings.sliderImages || [];
+            if(images.length === 0) { container.innerHTML = `<span class="text-xs text-slate-400">No images</span>`; return; }
+            images.forEach((img, idx) => {
+                container.innerHTML += `<div class="relative w-24 h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm shrink-0"><img src="${img}" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div>`;
+            });
+        };
+
+        window.switchAdminTab = function(tab) {
+            ['overview', 'requests', 'inventory', 'settings'].forEach(t => { document.getElementById(`adm-sec-${t}`).classList.add('hidden-view'); document.getElementById(`adm-tab-${t}`).className = "px-5 py-3.5 text-xs font-medium text-slate-500 hover:text-slate-800 whitespace-nowrap"; });
+            document.getElementById(`adm-sec-${tab}`).classList.remove('hidden-view'); document.getElementById(`adm-tab-${tab}`).className = "px-5 py-3.5 text-xs font-bold text-brand-accent border-b-2 border-brand-accent whitespace-nowrap";
+        };
+
+        window.handleAddInventoryItem = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-add-inv'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`; btn.disabled = true;
+            try {
+                await addDoc(invRef, { name: document.getElementById('invName').value, totalQty: parseInt(document.getElementById('invTotal').value), issuedQty: 0, images: document.getElementById('invImages').value, desc: document.getElementById('invDesc').value, createdAt: serverTimestamp() });
+                showToast("Added!"); e.target.reset();
+            } catch (error) { showToast("Error saving", "error"); } finally { btn.innerHTML = "Save Equipment"; btn.disabled = false; }
+        };
+
+        window.renderAdminInventory = function() {
+            const container = document.getElementById('adminInventoryList'); container.innerHTML = '';
+            if(inventoryData.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 p-4 bg-white rounded-xl">No items.</p>`; return; }
+            inventoryData.forEach(item => {
+                const available = (item.totalQty || 0) - (item.issuedQty || 0);
+                container.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center gap-3"><div class="flex-1"><h4 class="font-bold text-slate-800 text-sm leading-tight">${item.name}</h4><div class="flex gap-3 mt-1.5 text-[10px] font-bold"><span class="text-slate-500">Total: ${item.totalQty}</span><span class="text-brand-accent">Issued: ${item.issuedQty}</span><span class="text-emerald-600">Avail: ${available}</span></div></div><button onclick="deleteInventoryItem('${item.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition shrink-0"><i class="fa-solid fa-trash-can text-xs"></i></button></div>`;
+            });
+        };
+
+        window.deleteInventoryItem = function(id) {
+            openConfirmModal("Delete", "Remove item from catalog?", async () => {
+                try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); }
+            });
+        };
+
+        window.renderAdminRequests = function() {
+            const filter = document.getElementById('reqFilterSelect').value;
+            const container = document.getElementById('adminRequestsContainer'); container.innerHTML = '';
+            let filteredReqs = filter !== 'all' ? requestsData.filter(r => r.status === filter) : requestsData;
+            if(filteredReqs.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 p-4 text-center bg-white rounded-xl">No requests.</p>`; return; }
+
+            filteredReqs.forEach(req => {
+                let actionsHtml = '', statusBadge = '';
+                if(req.status === 'pending') { statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Pending</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'approved')" class="flex-1 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold">Approve</button>`; }
+                else if(req.status === 'approved') { statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Approved</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'issued', '${req.itemId}')" class="flex-1 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold">Issue Item</button>`; }
+                else if(req.status === 'issued') { statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Issued</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'returned', '${req.itemId}')" class="flex-1 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-xs font-bold">Mark Returned</button>`; }
+                else if(req.status === 'returned') { statusBadge = `<span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Returned</span>`; }
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-start mb-2 pb-2 border-b border-slate-50"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">${req.id}</p><h4 class="font-bold text-slate-800 text-sm mt-0.5">${req.itemName}</h4></div>${statusBadge}</div>
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                            <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Patient</span> <span class="font-semibold text-slate-700">${req.reqName}</span></div>
+                            <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Phone</span> <a href="tel:${req.reqPhone}" class="font-bold text-brand-accent underline">${req.reqPhone}</a></div>
+                        </div>
+                        <div class="flex gap-2">${actionsHtml}<button onclick="deleteRequest('${req.id}')" class="w-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 rounded-lg hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button></div>
+                    </div>`;
+            });
+        };
+
+        // FIX 3: Implemented Atomic operations (increment/decrement) for inventory management to avoid race conditions.
+        window.updateReqStatus = async function(reqId, newStatus, itemId = null) {
+            try {
+                const itemRef = itemId ? doc(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3', itemId) : null;
+                
+                if(newStatus === 'issued' && itemRef) {
+                    const item = inventoryData.find(i => i.id === itemId);
+                    if(item && ((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) return showToast("Out of stock!", "error"); 
+                    await updateDoc(itemRef, { issuedQty: increment(1) }); 
+                }
+                if(newStatus === 'returned' && itemRef) {
+                    await updateDoc(itemRef, { issuedQty: increment(-1) });
+                }
+                await updateDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', reqId), { status: newStatus });
+                showToast(`Status updated to ${newStatus}`);
+            } catch(e) { showToast("Error updating status", "error"); console.error(e); }
+        };
+
+        window.deleteRequest = function(id) { openConfirmModal("Delete Request", "Remove this request?", async () => { try { await deleteDoc(doc(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3', id)); showToast("Deleted"); } catch(e){ showToast("Error", "error"); } }); };
+        
+        window.onload = () => setLanguage('en');
+    </script>
+</body>
+</html>
