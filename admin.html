@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Santhwanam - Admin Portal</title>
+    <title>SKSSF Santhwanam - Admin Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -89,10 +89,26 @@
                 <div id="adm-sec-overview" class="animate-fade">
                     <h2 class="text-base font-bold text-slate-800 mb-3">Overview</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-envelope-open-text text-xl text-blue-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-new-req">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">New Requests</p></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-box-open text-xl text-indigo-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-tot-items">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Total Items</p></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-hand-holding-hand text-xl text-emerald-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-issued">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Issued/Given</p></div>
-                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center"><i class="fa-solid fa-boxes-packing text-xl text-amber-500 mb-1.5"></i><h3 class="text-xl font-black text-slate-800" id="stat-avail">0</h3><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Available</p></div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center">
+                            <i class="fa-solid fa-envelope-open-text text-xl text-blue-500 mb-1.5"></i>
+                            <h3 class="text-xl font-black text-slate-800" id="stat-new-req">0</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">New Requests</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center cursor-pointer hover:shadow-md transition group" onclick="openStatsModal('total')">
+                            <i class="fa-solid fa-box-open text-xl text-indigo-500 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-xl font-black text-slate-800" id="stat-tot-items">0</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide flex items-center justify-center gap-1">Unique Items <i class="fa-solid fa-circle-info text-slate-300"></i></p>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center">
+                            <i class="fa-solid fa-hand-holding-hand text-xl text-emerald-500 mb-1.5"></i>
+                            <h3 class="text-xl font-black text-slate-800" id="stat-issued">0</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Total Issued</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center cursor-pointer hover:shadow-md transition group" onclick="openStatsModal('avail')">
+                            <i class="fa-solid fa-boxes-packing text-xl text-amber-500 mb-1.5 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-xl font-black text-slate-800" id="stat-avail">0</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide flex items-center justify-center gap-1">Available Items <i class="fa-solid fa-circle-info text-slate-300"></i></p>
+                        </div>
                     </div>
                 </div>
 
@@ -102,12 +118,16 @@
                         <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200 w-full md:w-auto overflow-x-auto">
                             <input type="radio" name="reqFilter" id="rFltAll" value="all" checked class="hidden radio-filter" onchange="renderAdminRequests()">
                             <label for="rFltAll" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">All</label>
+                            
                             <input type="radio" name="reqFilter" id="rFltReq" value="Item Request" class="hidden radio-filter" onchange="renderAdminRequests()">
                             <label for="rFltReq" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Requested</label>
+                            
                             <input type="radio" name="reqFilter" id="rFltPen" value="Pending" class="hidden radio-filter" onchange="renderAdminRequests()">
                             <label for="rFltPen" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Pending</label>
+                            
                             <input type="radio" name="reqFilter" id="rFltGiv" value="Given" class="hidden radio-filter" onchange="renderAdminRequests()">
                             <label for="rFltGiv" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Given</label>
+                            
                             <input type="radio" name="reqFilter" id="rFltRet" value="Returned" class="hidden radio-filter" onchange="renderAdminRequests()">
                             <label for="rFltRet" class="px-3 py-1.5 text-[10px] font-bold text-slate-500 rounded-lg cursor-pointer whitespace-nowrap">Returned</label>
                         </div>
@@ -203,6 +223,17 @@
         </div>
     </div>
 
+    <!-- Stats List Modal -->
+    <div id="statsListModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-900 text-sm" id="statsModalTitle">Item List</h3>
+                <button onclick="closeStatsModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="statsListContainer" class="flex-1 overflow-y-auto pr-2 space-y-1"></div>
+        </div>
+    </div>
+
     <!-- Request Edit Modal -->
     <div id="requestEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden-view flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl">
@@ -214,8 +245,8 @@
                 <div><label class="block font-semibold text-slate-600 mb-1">Location</label><input type="text" id="erLoc" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
                 <div><label class="block font-semibold text-slate-600 mb-1">Duration</label><input type="text" id="erDur" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
                 <div class="flex gap-3 mt-4">
-                    <button type="button" onclick="closeRequestEditModal()" class="w-1/2 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold">Cancel</button>
-                    <button type="submit" id="btn-save-req" class="w-1/2 bg-brand-accent text-white py-3 rounded-xl font-bold shadow-md">Update</button>
+                    <button type="button" onclick="closeRequestEditModal()" class="w-1/2 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200">Cancel</button>
+                    <button type="submit" id="btn-save-req" class="w-1/2 bg-brand-accent text-white py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700">Update</button>
                 </div>
             </form>
         </div>
@@ -226,7 +257,7 @@
         <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col max-h-[80vh]">
             <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2">
                 <h3 class="font-bold text-slate-900 text-sm">Usage History</h3>
-                <button onclick="closeStockUsersModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeStockUsersModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="stockUsersList" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
         </div>
@@ -262,10 +293,8 @@
         window.closeConfirmModal = function() { document.getElementById('confirmModal').classList.add('hidden-view'); confirmCallback = null; };
         document.getElementById('confirmActionBtn').addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
 
-        // Auth Listener & Role Verification
         onAuthStateChanged(auth, async (user) => {
             if (user && !user.isAnonymous) {
-                // Check if user is in 'admins' collection and active
                 const adminDocRef = doc(admRef, user.uid);
                 try {
                     const adminDoc = await getDoc(adminDocRef);
@@ -299,7 +328,6 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
             try { 
                 await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value); 
-                // Navigation handled by auth listener
             } catch (error) { 
                 showToast("Login Failed. Check credentials.", "error"); 
             } finally { btn.innerHTML = originalHtml; }
@@ -307,7 +335,6 @@
 
         window.logoutAdmin = function() { openConfirmModal("Logout", "End session?", () => signOut(auth).then(() => showToast("Logged out"))); };
 
-        // Image Compression Utility
         async function compressImageToBase64(file, maxSizeKB = 200) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader(); reader.readAsDataURL(file);
@@ -332,7 +359,6 @@
             });
         }
 
-        // Fetch Data
         onSnapshot(setRef, (docSnap) => {
             if (docSnap.exists()) {
                 appSettings = docSnap.data();
@@ -348,11 +374,59 @@
         });
 
         onSnapshot(invRef, (snapshot) => {
-            inventoryData = []; let total = 0, avail = 0, issued = 0;
-            snapshot.forEach(doc => { const data = doc.data(); inventoryData.push({ id: doc.id, ...data }); total += data.totalQty || 0; issued += data.issuedQty || 0; avail += (data.totalQty || 0) - (data.issuedQty || 0); });
-            document.getElementById('stat-tot-items').innerText = total; document.getElementById('stat-issued').innerText = issued; document.getElementById('stat-avail').innerText = avail;
+            inventoryData = []; 
+            let uniqueItems = 0, uniqueAvail = 0, issued = 0;
+            snapshot.forEach(doc => { 
+                const data = doc.data(); 
+                inventoryData.push({ id: doc.id, ...data }); 
+                
+                uniqueItems++;
+                const avail = (data.totalQty || 0) - (data.issuedQty || 0);
+                if (avail > 0) uniqueAvail++;
+                issued += (data.issuedQty || 0); 
+            });
+            
+            document.getElementById('stat-tot-items').innerText = uniqueItems; 
+            document.getElementById('stat-issued').innerText = issued; 
+            document.getElementById('stat-avail').innerText = uniqueAvail;
+            
             if (isAdminLoggedIn) renderAdminStock(); 
         });
+
+        window.openStatsModal = function(type) {
+            const container = document.getElementById('statsListContainer');
+            const title = document.getElementById('statsModalTitle');
+            container.innerHTML = '';
+            
+            let displayData = [];
+            if(type === 'total') {
+                title.innerText = `Total Listings (${inventoryData.length})`;
+                displayData = inventoryData;
+            } else if (type === 'avail') {
+                displayData = inventoryData.filter(i => ((i.totalQty || 0) - (i.issuedQty || 0)) > 0);
+                title.innerText = `Available Listings (${displayData.length})`;
+            }
+            
+            if(displayData.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No items found.</p>`;
+            } else {
+                displayData.forEach(item => {
+                    const avail = (item.totalQty || 0) - (item.issuedQty || 0);
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center p-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition">
+                            <div class="font-bold text-xs text-slate-800 flex items-center gap-2">
+                                ${item.itemType === 'service' ? '<i class="fa-solid fa-hand-holding-heart text-amber-500"></i>' : '<i class="fa-solid fa-box text-brand-accent"></i>'} 
+                                ${item.name}
+                            </div>
+                            <div class="text-[10px] bg-slate-100 px-2 py-1 rounded-lg font-bold text-slate-600 border border-slate-200">
+                                Total: <span class="text-slate-800">${item.totalQty}</span> | Avail: <span class="${avail > 0 ? 'text-emerald-600' : 'text-red-500'}">${avail}</span>
+                            </div>
+                        </div>`;
+                });
+            }
+            document.getElementById('statsListModal').classList.remove('hidden-view');
+        };
+        window.closeStatsModal = function() { document.getElementById('statsListModal').classList.add('hidden-view'); };
 
         onSnapshot(reqRef, (snapshot) => {
             requestsData = [];
@@ -370,7 +444,6 @@
             document.getElementById(`adm-sec-${tab}`).classList.remove('hidden-view'); document.getElementById(`adm-tab-${tab}`).className = "px-5 py-3.5 text-xs font-bold text-brand-accent border-b-2 border-brand-accent whitespace-nowrap";
         };
 
-        // Settings Logic
         window.handleLogoChange = async function(e) { if(!e.target.files || e.target.files.length === 0) return; try { tempLogo = await compressImageToBase64(e.target.files[0], 200); renderLogoPreview(); } catch(e) { showToast("Error", "error"); } }
         function renderLogoPreview() {
             const preview = document.getElementById('logoImgPreview');
@@ -400,7 +473,6 @@
             imgs.forEach((img, idx) => { const sizeKb = Math.round((img.length * 3)/4/1024); container.innerHTML += `<div class="relative w-24 h-20 shrink-0"><div class="w-full h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"><img src="${img}" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[9px] text-center text-slate-500 font-bold mt-1">${sizeKb} KB</p></div>`; });
         };
 
-        // Inventory Management Logic
         window.handleAddInvImage = async function(e) {
             if(!e.target.files || e.target.files.length === 0) return;
             try { const res = await compressImageToBase64(e.target.files[0], 200); tempInvImages.push(res); renderInvImages(); e.target.value = ''; } 
@@ -443,7 +515,6 @@
 
         window.deleteInventoryItem = function(id) { openConfirmModal("Delete Listing", "Remove from database entirely?", async () => { try { await deleteDoc(doc(invRef, id)); showToast("Listing Deleted"); } catch(e){ showToast("Error", "error"); } }); };
 
-        // Stock & Usage Logic
         window.renderAdminStock = function() {
             const container = document.getElementById('adminStockGrid'); container.innerHTML = '';
             if(inventoryData.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center"><p class="text-xs text-slate-400">No stock found.</p></div>`; return; }
@@ -451,7 +522,6 @@
             inventoryData.forEach(item => {
                 const available = (item.totalQty || 0) - (item.issuedQty || 0);
                 const mainImg = (item.imagesArray && item.imagesArray.length > 0) ? `<img src="${item.imagesArray[0]}" class="w-16 h-16 rounded-xl object-contain p-1 bg-slate-50">` : `<div class="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fa-solid fa-box text-slate-300"></i></div>`;
-                
                 const totalUsers = requestsData.filter(r => r.itemId === item.id && (r.status === 'Given' || r.status === 'Returned')).length;
 
                 container.innerHTML += `
@@ -481,7 +551,6 @@
             const container = document.getElementById('stockUsersList'); container.innerHTML = '';
             
             const users = requestsData.filter(r => r.itemId === itemId && (r.status === 'Given' || r.status === 'Returned'));
-            
             if(users.length === 0) { container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No usage history for this item.</p>`; }
             else {
                 users.forEach(u => {
@@ -501,7 +570,6 @@
         };
         window.closeStockUsersModal = function() { document.getElementById('stockUsersModal').classList.add('hidden-view'); };
 
-        // Requests Management Logic
         window.renderAdminRequests = function() {
             const filter = document.querySelector('input[name="reqFilter"]:checked').value;
             const container = document.getElementById('adminRequestsContainer'); container.innerHTML = '';
@@ -510,16 +578,16 @@
 
             filteredReqs.forEach(req => {
                 let actionsHtml = '', statusBadge = '';
-                if(req.status === 'Item Request') { statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Item Request</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Pending')" class="flex-1 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold">Process (Pending)</button>`; }
-                else if(req.status === 'Pending') { statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Pending</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Given', '${req.itemId}')" class="flex-1 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold">Mark Given</button>`; }
-                else if(req.status === 'Given') { statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Given</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Returned', '${req.itemId}')" class="flex-1 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-xs font-bold">Mark Returned</button>`; }
+                if(req.status === 'Item Request') { statusBadge = `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Item Request</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Pending')" class="flex-1 py-2 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-xs font-bold hover:bg-blue-100">Process (Pending)</button>`; }
+                else if(req.status === 'Pending') { statusBadge = `<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Pending</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Given', '${req.itemId}')" class="flex-1 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold hover:bg-emerald-100">Mark Given</button>`; }
+                else if(req.status === 'Given') { statusBadge = `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Given</span>`; actionsHtml = `<button onclick="updateReqStatus('${req.id}', 'Returned', '${req.itemId}')" class="flex-1 py-2 bg-slate-100 text-slate-600 border border-slate-200 rounded-lg text-xs font-bold hover:bg-slate-200">Mark Returned</button>`; }
                 else if(req.status === 'Returned') { statusBadge = `<span class="bg-slate-200 text-slate-500 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wide">Returned</span>`; }
 
                 container.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
                         <div class="flex justify-between items-start mb-2 pb-2 border-b border-slate-50"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">${req.appId}</p><h4 class="font-bold text-slate-800 text-sm mt-0.5">${req.itemName}</h4></div>${statusBadge}</div>
                         <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100 relative group">
-                            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition"><button onclick="openRequestEdit('${req.id}')" class="w-6 h-6 bg-blue-100 text-blue-600 rounded-md flex items-center justify-center shadow"><i class="fa-solid fa-pen text-[10px]"></i></button></div>
+                            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition"><button onclick="openRequestEdit('${req.id}')" class="w-6 h-6 bg-blue-100 text-blue-600 rounded-md flex items-center justify-center shadow hover:bg-blue-200"><i class="fa-solid fa-pen text-[10px]"></i></button></div>
                             <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Patient</span> <span class="font-semibold text-slate-700">${req.reqName}</span></div>
                             <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Phone</span> <a href="tel:${req.reqPhone}" class="font-bold text-brand-accent underline">${req.reqPhone}</a></div>
                             <div><span class="text-slate-400 block text-[9px] uppercase font-bold">Location</span> <span class="font-semibold text-slate-700">${req.reqLoc}</span></div>
