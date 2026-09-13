@@ -20,5 +20,6 @@ const appIdStr = "charity_v3_demo";
 const invRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'inventory_v3');
 const reqRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'requests_v3');
 const setRef = doc(db, 'artifacts', appIdStr, 'public', 'data', 'settings', 'app_settings');
+const srvRef = collection(db, 'artifacts', appIdStr, 'public', 'data', 'services_v3');
 
-export { app, auth, db, invRef, reqRef, setRef };
+export { app, auth, db, invRef, reqRef, setRef, srvRef };
