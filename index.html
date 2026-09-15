@@ -100,13 +100,18 @@
                 <div id="section-tracking" class="px-4 py-8 mt-4 bg-white border-y border-slate-100">
                     <div class="max-w-md mx-auto bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm relative">
                         <h3 class="font-bold text-slate-800 text-base mb-1 text-center" data-i18n="track_title">Track Status</h3>
-                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium">Enter the tracking ID received after submitting your request.</p>
+                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium" data-i18n="track_desc">Enter Phone Number first to search names.</p>
                         <form onsubmit="handleTrackRequest(event)" class="space-y-3.5 relative">
+                            <input type="hidden" id="trackSelectedId">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-600 mb-1 ml-1 uppercase">Tracking ID</label>
-                                <input type="text" id="trackId" required autocomplete="off" placeholder="Paste your tracking ID" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
+                                <input type="tel" id="trackPhone" required pattern="[0-9]{10}" data-i18n="track_phone" placeholder="Phone Number (10 Digits)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
+                                <p id="trackPhoneMsg" class="text-[9px] text-brand-accent mt-1 hidden font-bold text-right"></p>
                             </div>
-                            <button type="submit" id="btn-check-status" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 mt-2">
+                            <div class="relative">
+                                <input type="text" id="trackName" disabled autocomplete="off" data-i18n="track_name" placeholder="Type first 3 letters of name..." class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent transition-colors disabled:opacity-60">
+                                <div id="nameSuggestions" class="autocomplete-dropdown"></div>
+                            </div>
+                            <button type="submit" id="btn-check-status" disabled class="w-full bg-slate-300 text-slate-500 py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 mt-2">
                                 <i class="fa-solid fa-magnifying-glass-location"></i> <span data-i18n="track_btn">Check Status</span>
                             </button>
                         </form>
@@ -278,7 +283,7 @@
     <script type="module">
         import { auth, invRef, reqRef, setRef, trackRef } from './firebase_configuration.js';
         import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { onSnapshot, doc, getDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { onSnapshot, doc, writeBatch, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Remove the loading screen once Tailwind and scripts are ready
         window.addEventListener('load', () => {
@@ -292,8 +297,8 @@
         const translations = {
             en: {
                 hero_badge: "Community Services", hero_title: "Services when you need them", hero_desc: "Browse services made available by the administrator.",
-                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter your tracking ID to check the latest status.",
-                track_phone: "Tracking ID", track_name: "", track_btn: "Check Status",
+                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter Phone Number first to search names.",
+                track_phone: "Phone Number (10 Digits)", track_name: "Type first 3 letters of name...", track_btn: "Check Status",
                 contact_title: "Contact Us", contact_wa: "WhatsApp Us", contact_wa_desc: "Message for queries", contact_call: "Call Us", contact_call_desc: "For emergencies",
                 inv_search: "Search...", inv_title: "Available Listings", details_title: "Details", lbl_av: "Stock Status", lbl_price: "Fee / Deposit",
                 adm_inv_desc: "Description", lbl_notes: "Notes", str_req_btn: "Request Assistance", nav_home: "Home", nav_srv: "Services",
@@ -304,7 +309,7 @@
             ml: {
                 hero_badge: "സേവനങ്ങൾ", hero_title: "നിങ്ങൾക്ക് ആവശ്യമായ സേവനങ്ങൾ", hero_desc: "അഡ്മിൻ നൽകുന്ന സേവനങ്ങൾ ഇവിടെ കാണാം.",
                 btn_browse_store: "സേവനങ്ങൾ കാണുക", track_title: "അപേക്ഷ പരിശോധിക്കുക", track_desc: "ഫോൺ നമ്പർ നൽകിയ ശേഷം പേര് തിരയുക.",
-                track_phone: "ട്രാക്കിംഗ് ഐഡി", track_name: "", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
+                track_phone: "ഫോൺ നമ്പർ (10 അക്കം)", track_name: "പേരിന്റെ ആദ്യ 3 അക്ഷരം ടൈപ്പ് ചെയ്യുക...", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
                 contact_title: "ബന്ധപ്പെടുക", contact_wa: "വാട്സ്ആപ്പ്", contact_wa_desc: "വിവരങ്ങൾ അറിയാൻ", contact_call: "വിളിക്കുക", contact_call_desc: "അടിയന്തര ആവശ്യങ്ങൾക്ക്",
                 inv_search: "സെർച്ച് ചെയ്യുക...", inv_title: "ലഭ്യമായവ", details_title: "കൂടുതൽ വിവരങ്ങൾ", lbl_av: "സ്റ്റോക്ക്", lbl_price: "ഫീസ് / നിക്ഷേപം",
                 adm_inv_desc: "വിവരങ്ങൾ", lbl_notes: "നോട്സ്", str_req_btn: "അപേക്ഷ നൽകുക", nav_home: "ഹോം", nav_srv: "സേവനങ്ങൾ",
@@ -319,6 +324,7 @@
         let appSettings = {};
         let activeDetailItem = null;
         let publicTrackingReady = false;
+        let fetchedTrackingRequests = [];
         let initialLoadChecked = false; // Used for deep linking check
 
         window.setLanguage = function(lang) {
@@ -618,41 +624,69 @@
                     reqLoc: document.getElementById('reqLoc').value.trim(), reqDuration: document.getElementById('reqDuration').value,
                     status: 'Item Request', createdAt: serverTimestamp()
                 });
-                batch.set(trackingDoc, { itemName, status: 'Item Request', createdAt: serverTimestamp() });
+                batch.set(trackingDoc, { itemName, reqName: document.getElementById('reqName').value.trim(), reqPhone: document.getElementById('reqPhone').value.trim(), status: 'Item Request', createdAt: serverTimestamp() });
                 await batch.commit();
-                showToast(`Request submitted. Save this tracking ID: ${trackingId}`);
+                showToast('Request submitted successfully.');
                 closeRequestModal(); navigateToUserPage('landing'); setTimeout(() => scrollToTracking(), 500);
+                if (appSettings.whatsapp) {
+                    const message = `New service request%0AName: ${encodeURIComponent(document.getElementById('reqName').value.trim())}%0APhone: ${encodeURIComponent(document.getElementById('reqPhone').value.trim())}%0AItem: ${encodeURIComponent(itemName)}%0ALocation: ${encodeURIComponent(document.getElementById('reqLoc').value.trim())}%0ADuration: ${encodeURIComponent(document.getElementById('reqDuration').value)}`;
+                    window.location.href = `https://wa.me/${appSettings.whatsapp.replace(/\D/g, '')}?text=${message}`;
+                }
             } catch (error) { showToast("Failed to submit request.", "error"); } 
             finally { btn.innerHTML = `Submit Request <i class="fa-solid fa-paper-plane ml-2"></i>`; btn.disabled = false; }
         };
 
-        window.handleTrackRequest = async function(e) {
-            e.preventDefault();
-            const resultArea = document.getElementById('trackResultArea');
-            const trackingId = document.getElementById('trackId').value.trim();
-            const btn = document.getElementById('btn-check-status');
-            btn.disabled = true;
+        const trackPhoneInp = document.getElementById('trackPhone');
+        const trackNameInp = document.getElementById('trackName');
+        const nameSuggestions = document.getElementById('nameSuggestions');
+        const checkBtn = document.getElementById('btn-check-status');
+        const phoneMsg = document.getElementById('trackPhoneMsg');
+
+        trackPhoneInp.addEventListener('input', async (e) => {
+            const phone = e.target.value.trim();
+            trackNameInp.disabled = true; trackNameInp.value = ''; nameSuggestions.style.display = 'none';
+            checkBtn.disabled = true; document.getElementById('trackSelectedId').value = '';
+            phoneMsg.classList.add('hidden');
+            if (phone.length !== 10) return;
             try {
-                const snap = await getDoc(doc(trackRef, trackingId));
-                if (!snap.exists()) {
-                    resultArea.innerHTML = '<p class="text-xs text-red-500 text-center">Tracking ID not found.</p>';
-                    resultArea.classList.remove('hidden-view');
-                    return;
+                const snapshot = await getDocs(query(trackRef, where('reqPhone', '==', phone)));
+                fetchedTrackingRequests = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                phoneMsg.classList.remove('hidden');
+                if (fetchedTrackingRequests.length) {
+                    trackNameInp.disabled = false; trackNameInp.classList.replace('bg-slate-100', 'bg-white');
+                    phoneMsg.textContent = 'Phone matches found. Type name.'; phoneMsg.className = 'text-[9px] text-emerald-600 mt-1 font-bold text-right';
+                } else {
+                    phoneMsg.textContent = 'No requests found for this number.'; phoneMsg.className = 'text-[9px] text-red-500 mt-1 font-bold text-right';
                 }
-                const req = snap.data();
-                const statuses = {
-                    'Item Request': ['Requested', 'bg-amber-100 text-amber-700'],
-                    Pending: ['Pending', 'bg-blue-100 text-blue-700'],
-                    Given: ['Given', 'bg-emerald-100 text-emerald-700'],
-                    Returned: ['Returned', 'bg-slate-200 text-slate-700']
-                };
-                const [label, badgeClass] = statuses[req.status] || ['Updated', 'bg-slate-200 text-slate-700'];
-                const dateStr = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : '';
-                resultArea.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade"><div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Tracking ID</p><p class="font-black text-slate-800 text-sm break-all">${trackingId}</p></div><span class="${badgeClass} px-2 py-1 rounded font-bold text-[10px] uppercase">${label}</span></div><div class="space-y-1.5 text-xs"><p><span class="text-slate-500 font-medium">Item:</span> <span class="font-bold text-slate-800">${req.itemName}</span></p>${dateStr ? `<p><span class="text-slate-500 font-medium">Applied:</span> <span class="font-bold text-slate-800">${dateStr}</span></p>` : ''}</div></div>`;
-                resultArea.classList.remove('hidden-view');
-            } catch (_) {
-                showToast('Unable to check status. Please try again.', 'error');
-            } finally { btn.disabled = false; }
+            } catch (_) { showToast('Unable to find requests. Please try again.', 'error'); }
+        });
+
+        trackNameInp.addEventListener('input', (e) => {
+            const value = e.target.value.trim().toLowerCase();
+            nameSuggestions.innerHTML = ''; checkBtn.disabled = true; document.getElementById('trackSelectedId').value = '';
+            if (value.length < 3) { nameSuggestions.style.display = 'none'; return; }
+            const matches = fetchedTrackingRequests.filter(request => request.reqName.toLowerCase().includes(value));
+            matches.forEach(request => {
+                const option = document.createElement('div'); option.className = 'autocomplete-item';
+                option.innerHTML = `<span class="font-bold">${request.reqName}</span><br><span class="text-[9px] text-slate-400">Item: ${request.itemName}</span>`;
+                option.onclick = () => { trackNameInp.value = request.reqName; document.getElementById('trackSelectedId').value = request.id; nameSuggestions.style.display = 'none'; checkBtn.disabled = false; checkBtn.classList.replace('bg-slate-300', 'bg-slate-800'); checkBtn.classList.replace('text-slate-500', 'text-white'); };
+                nameSuggestions.appendChild(option);
+            });
+            nameSuggestions.style.display = matches.length ? 'block' : 'none';
+        });
+        document.addEventListener('click', (event) => { if (event.target !== trackNameInp) nameSuggestions.style.display = 'none'; });
+
+        window.handleTrackRequest = function(e) {
+            e.preventDefault();
+            const trackingId = document.getElementById('trackSelectedId').value;
+            const req = fetchedTrackingRequests.find(request => request.id === trackingId);
+            if (!req) return;
+            const statuses = { 'Item Request': ['Requested', 'bg-amber-100 text-amber-700'], Pending: ['Pending', 'bg-blue-100 text-blue-700'], Given: ['Given', 'bg-emerald-100 text-emerald-700'], Returned: ['Returned', 'bg-slate-200 text-slate-700'] };
+            const [label, badgeClass] = statuses[req.status] || ['Updated', 'bg-slate-200 text-slate-700'];
+            const date = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : '';
+            const resultArea = document.getElementById('trackResultArea');
+            resultArea.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade"><div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Application</p><p class="font-black text-slate-800 text-sm">${req.itemName}</p></div><span class="${badgeClass} px-2 py-1 rounded font-bold text-[10px] uppercase">${label}</span></div>${date ? `<p class="text-xs text-slate-500">Applied: ${date}</p>` : ''}</div>`;
+            resultArea.classList.remove('hidden-view');
         };
 
         window.addEventListener('popstate', () => {

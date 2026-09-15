@@ -37,14 +37,14 @@ service cloud.firestore {
         allow update, delete: if isAdmin();
       }
 
-      // Only a status-safe record is public. Exact-ID reads support tracking;
-      // listing is intentionally denied so records cannot be enumerated.
+      // Tracking contains only the minimum fields needed for phone/name status lookup.
       match /tracking/{trackingId} {
-        allow get: if isAuthenticated();
-        allow list: if false;
+        allow get, list: if isAuthenticated();
         allow create: if isAuthenticated()
-          && request.resource.data.keys().hasOnly(['itemName', 'status', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['itemName', 'reqName', 'reqPhone', 'status', 'createdAt'])
           && request.resource.data.itemName is string
+          && request.resource.data.reqName is string
+          && request.resource.data.reqPhone is string && request.resource.data.reqPhone.matches('^[0-9]{10}$')
           && request.resource.data.status == 'Item Request';
         allow update, delete: if isAdmin();
       }

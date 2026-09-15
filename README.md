@@ -46,10 +46,12 @@ username: Your Name
 ## ആദ്യ content setup
 
 1. `/admin.html` തുറന്ന് admin email/password ഉപയോഗിച്ച് login ചെയ്യുക.
-2. **Settings** tab-ൽ title, subtitle, contact number, WhatsApp, address, logo എന്നിവ നൽകുക.
+2. **Settings** tab-ൽ title, subtitle, contact number, WhatsApp number (country code സഹിതം, ഉദാ: `919876543210`), address, logo എന്നിവ നൽകുക.
 3. **Add Item/Service** tab-ൽ services/items ചേർക്കുക.
 4. Settings അല്ലെങ്കിൽ services ഒന്നും നൽകിയിട്ടില്ലെങ്കിൽ public site ഒരു സ്ഥാപനത്തിന്റെയും പഴയ വിവരങ്ങൾ കാണിക്കാതെ clean empty state ആയി തുടരും.
 
-## Privacy note
+## Request tracking and WhatsApp
 
-Public visitors-ക്ക് ഇനി പേര്, ഫോൺ, സ്ഥലം എന്നിവയുള്ള അപേക്ഷകൾ വായിക്കാൻ കഴിയില്ല. അപേക്ഷ submit ചെയ്തതിന് ശേഷം ലഭിക്കുന്ന **tracking ID** സുരക്ഷിതമായി സൂക്ഷിക്കണം; അതുപയോഗിച്ചാണ് status കാണാൻ കഴിയുക.
+- Visitor ആദ്യം 10-digit phone number നൽകണം. തുടർന്ന് പേരിന്റെ ആദ്യ മൂന്ന് അക്ഷരങ്ങൾ ടൈപ്പ് ചെയ്താൽ matching requests suggestion ആയി വരും; ശരിയായ പേര് തിരഞ്ഞെടുക്കുമ്പോൾ status കാണാം.
+- അപേക്ഷ submit ചെയ്താൽ അത് Firestore-ൽ admin-നായി save ആകും. Settings-ൽ WhatsApp number നൽകിയിട്ടുണ്ടെങ്കിൽ WhatsApp app-ൽ request message തയ്യാറായി തുറക്കും; visitor **Send** അമർത്തുമ്പോൾ മാത്രമാണ് WhatsApp message അയക്കുക. WhatsApp സുരക്ഷാ നിയമങ്ങൾ കാരണം website-ന് visitor-ന്റെ behalf-ൽ message സ്വയം send ചെയ്യാൻ സാധിക്കില്ല.
+- Location, duration, കൂടാതെ admin request list എന്നിവ public tracking result-ൽ കാണിക്കില്ല.
