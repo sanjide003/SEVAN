@@ -1,35 +1,57 @@
-ഫയർബേസിൽ (Firebase) അഡ്മിൻ അക്കൗണ്ട് നിർമ്മിക്കുന്നതിനുള്ള ഘട്ടങ്ങൾ
-നിങ്ങളുടെ ആപ്ലിക്കേഷനിൽ നിലവിൽ ഇമെയിൽ/പാസ്‌വേഡ് (Email/Password) വഴിയുള്ള ലോഗിൻ ആണ് നമ്മൾ സെറ്റ് ചെയ്തിരിക്കുന്നത്. ഇത് പ്രവർത്തനസജ്ജമാക്കാൻ ഫയർബേസ് കൺസോളിൽ താഴെ പറയുന്ന കാര്യങ്ങൾ ചെയ്യണം:
+# Service Portal — മൊബൈൽ ഉപയോഗിച്ച് സജ്ജീകരിക്കൽ
 
-ഘട്ടം 1: ഫയർബേസ് കൺസോളിൽ പ്രവേശിക്കുക
-നിങ്ങളുടെ കമ്പ്യൂട്ടറിലോ ഫോണിലോ ബ്രൗസർ തുറന്ന് https://console.firebase.google.com/ എന്ന ലിങ്കിൽ പോകുക.
+ഈ app GitHub Pages-ലാണ് പ്രവർത്തിക്കുന്നത്. വേറെ server, paid Firebase plan, Firebase Hosting എന്നിവ ആവശ്യമില്ല.
 
-ആപ്പ് നിർമ്മിക്കാൻ ഉപയോഗിച്ച അതേ ഗൂഗിൾ അക്കൗണ്ട് ഉപയോഗിച്ച് ലോഗിൻ ചെയ്യുക.
+## ഓരോ code update-നും
 
-അവിടെ നിങ്ങളുടെ പ്രൊജക്റ്റായ fiesta-for-checking എന്നതിൽ ക്ലിക്ക് ചെയ്യുക.
+1. GitHub-ൽ ലഭിക്കുന്ന PR തുറക്കുക.
+2. **Update PR** / merge button അമർത്തുക.
+3. GitHub Pages site സ്വയം പുതുക്കും.
 
-ഘട്ടം 2: Authentication (ലോഗിൻ സംവിധാനം) ഓൺ ചെയ്യുക
-ഇടതുവശത്തുള്ള മെനുവിൽ നിന്നും Build എന്നതിൽ ക്ലിക്ക് ചെയ്ത് Authentication തിരഞ്ഞെടുക്കുക.
+## ആദ്യ Firebase setup
 
-ആദ്യമായാണ് ഇത് എടുക്കുന്നതെങ്കിൽ "Get Started" എന്ന ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.
+### 1. Authentication
 
-മുകളിലുള്ള ടാബുകളിൽ നിന്നും "Sign-in method" എന്ന ടാബ് എടുക്കുക.
+Firebase Console → **Authentication** → **Sign-in method**:
 
-അതിൽ "Email/Password" എന്നത് തിരഞ്ഞെടുത്ത് Enable ചെയ്യുക (Save ചെയ്യുക).
+- **Email/Password** enable ചെയ്യുക (admin login-നായി).
+- **Anonymous** enable ചെയ്യുക (public visitors-നായി).
 
-(വളരെ പ്രധാനം): അതേ പേജിൽ "Add new provider" ക്ലിക്ക് ചെയ്ത് "Anonymous" എന്നതും Enable ചെയ്യുക.
-(സാധാരണക്കാർക്ക് ലോഗിൻ ചെയ്യാതെ തന്നെ സാധനങ്ങൾ കാണാനും അപേക്ഷകൾ അയക്കാനും ഈ Anonymous ഓപ്ഷൻ നിർബന്ധമാണ്).
+### 2. Admin user
 
-ഘട്ടം 3: അഡ്മിൻ അക്കൗണ്ട് നിർമ്മിക്കുക (Create Admin User)
-മുകളിലുള്ള ടാബുകളിൽ നിന്നും "Users" എന്ന ടാബ് എടുക്കുക.
+Authentication → **Users** → **Add user** ഉപയോഗിച്ച് admin email/password ഉണ്ടാക്കുക.
 
-അവിടെ കാണുന്ന "Add user" എന്ന ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക.
+### 3. Super admin document
 
-ഓഫീസ് അഡ്മിന് ഉപയോഗിക്കാൻ ഉദ്ദേശിക്കുന്ന ഒരു ഇമെയിൽ വിലാസവും (ഉദാഹരണത്തിന്: admin@santhwanam.com), ഒരു പാസ്‌വേഡും നൽകുക.
+Firestore Database-ൽ താഴെയുള്ള path-ൽ admin user-ന്റെ Firebase UID ഉപയോഗിച്ച് document വേണം:
 
-"Add user" ക്ലിക്ക് ചെയ്ത് സേവ് ചെയ്യുക.
+`SKSSF / charity_app / admins / <ADMIN_UID>`
 
-ഘട്ടം 4: ആപ്പിൽ ലോഗിൻ ചെയ്യുക!
-ഇപ്പോൾ ഫയർബേസിലെ സെറ്റപ്പുകൾ പൂർത്തിയായി.
-ഇനി നിങ്ങളുടെ ആപ്പ് തുറന്ന്, ഏറ്റവും താഴെയുള്ള "Office Admin Login" എന്നതിൽ ക്ലിക്ക് ചെയ്ത്, നിങ്ങൾ ഇപ്പോൾ ഫയർബേസിൽ കൊടുത്ത ഇമെയിലും പാസ്‌വേഡും നൽകി അഡ്മിൻ പാനലിലേക്ക് പ്രവേശിക്കാം!
+Document fields:
 
+```text
+active: true
+username: Your Name
+```
+
+### 4. Firestore Rules (ഓരോ rules update-നും)
+
+1. ഈ repository-യിലെ `firestore_rules.js` തുറക്കുക.
+2. മുഴുവൻ ഉള്ളടക്കവും copy ചെയ്യുക.
+3. Firebase Console → **Firestore Database** → **Rules**-ൽ paste ചെയ്യുക.
+4. **Publish** അമർത്തുക.
+
+ഇതാണ് GitHub PR വഴി സ്വയം ചെയ്യാൻ കഴിയാത്ത ഏക Firebase Console step.
+
+## ആദ്യ content setup
+
+1. `/admin.html` തുറന്ന് admin email/password ഉപയോഗിച്ച് login ചെയ്യുക.
+2. **Settings** tab-ൽ title, subtitle, contact number, WhatsApp number (country code സഹിതം, ഉദാ: `919876543210`), address, logo എന്നിവ നൽകുക.
+3. **Add Item/Service** tab-ൽ services/items ചേർക്കുക.
+4. Settings അല്ലെങ്കിൽ services ഒന്നും നൽകിയിട്ടില്ലെങ്കിൽ public site ഒരു സ്ഥാപനത്തിന്റെയും പഴയ വിവരങ്ങൾ കാണിക്കാതെ clean empty state ആയി തുടരും.
+
+## Request tracking and WhatsApp
+
+- Visitor ആദ്യം 10-digit phone number നൽകണം. തുടർന്ന് പേരിന്റെ ആദ്യ മൂന്ന് അക്ഷരങ്ങൾ ടൈപ്പ് ചെയ്താൽ matching requests suggestion ആയി വരും; ശരിയായ പേര് തിരഞ്ഞെടുക്കുമ്പോൾ status കാണാം.
+- അപേക്ഷ submit ചെയ്താൽ അത് Firestore-ൽ admin-നായി save ആകും. കാലയളവ് optional ആയി എഴുതാം. Settings-ൽ WhatsApp number നൽകിയിട്ടുണ്ടെങ്കിൽ WhatsApp app-ൽ request message, item page link, image link എന്നിവ തയ്യാറായി തുറക്കും; visitor **Send** അമർത്തുമ്പോൾ മാത്രമാണ് WhatsApp message അയക്കുക. WhatsApp സുരക്ഷാ നിയമങ്ങൾ കാരണം website-ന് visitor-ന്റെ behalf-ൽ message സ്വയം send ചെയ്യാൻ സാധിക്കില്ല.
+- Location, duration, കൂടാതെ admin request list എന്നിവ public tracking result-ൽ കാണിക്കില്ല.
