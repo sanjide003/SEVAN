@@ -53,5 +53,5 @@ username: Your Name
 ## Request tracking and WhatsApp
 
 - Visitor ആദ്യം 10-digit phone number നൽകണം. തുടർന്ന് പേരിന്റെ ആദ്യ മൂന്ന് അക്ഷരങ്ങൾ ടൈപ്പ് ചെയ്താൽ matching requests suggestion ആയി വരും; ശരിയായ പേര് തിരഞ്ഞെടുക്കുമ്പോൾ status കാണാം.
-- അപേക്ഷ submit ചെയ്താൽ അത് Firestore-ൽ admin-നായി save ആകും. Settings-ൽ WhatsApp number നൽകിയിട്ടുണ്ടെങ്കിൽ WhatsApp app-ൽ request message തയ്യാറായി തുറക്കും; visitor **Send** അമർത്തുമ്പോൾ മാത്രമാണ് WhatsApp message അയക്കുക. WhatsApp സുരക്ഷാ നിയമങ്ങൾ കാരണം website-ന് visitor-ന്റെ behalf-ൽ message സ്വയം send ചെയ്യാൻ സാധിക്കില്ല.
+- അപേക്ഷ submit ചെയ്താൽ അത് Firestore-ൽ admin-നായി save ആകും. കാലയളവ് optional ആയി എഴുതാം. Settings-ൽ WhatsApp number നൽകിയിട്ടുണ്ടെങ്കിൽ WhatsApp app-ൽ request message, item page link, image link എന്നിവ തയ്യാറായി തുറക്കും; visitor **Send** അമർത്തുമ്പോൾ മാത്രമാണ് WhatsApp message അയക്കുക. WhatsApp സുരക്ഷാ നിയമങ്ങൾ കാരണം website-ന് visitor-ന്റെ behalf-ൽ message സ്വയം send ചെയ്യാൻ സാധിക്കില്ല.
 - Location, duration, കൂടാതെ admin request list എന്നിവ public tracking result-ൽ കാണിക്കില്ല.

@@ -11,6 +11,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Noto Sans Malayalam', 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        #app-header { min-height: 64px; flex: 0 0 auto; display: block; }
+        @media (max-width: 640px) { #app-header { min-height: 68px; } #main-scroll-area { min-height: 0; } }
         .hidden-view { display: none !important; }
         .text-brand-deep { color: #1e1b4b; } .bg-brand-deep { background-color: #1e1b4b; } .bg-brand-accent { background-color: #4f46e5; } .text-brand-accent { color: #4f46e5; }
 
@@ -42,7 +44,7 @@
         <div class="loader-text">Loading…</div>
     </div>
 
-    <header class="bg-brand-deep text-white shadow-md z-30 shrink-0 relative">
+    <header id="app-header" class="bg-brand-deep text-white shadow-md z-30 shrink-0 relative">
         <div class="px-4 py-3 flex justify-between items-center max-w-6xl mx-auto w-full">
             <div class="flex items-center gap-3 cursor-pointer" onclick="navigateToUserPage('landing')">
                 <div id="appHeaderLogoContainer" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 overflow-hidden shrink-0">
@@ -71,7 +73,7 @@
             <section id="user-page-landing" class="w-full relative pb-10 animate-fade">
                 <div class="bg-gradient-to-b from-white to-slate-50 px-4 py-8 md:py-14 text-center border-b border-slate-100">
                     <span class="bg-indigo-50 text-brand-accent text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-widest mb-4 inline-block shadow-sm" data-i18n="hero_badge">Community Services</span>
-                    <h2 id="landingHeroTitle" class="text-2xl md:text-4xl font-extrabold text-brand-deep mb-3 leading-tight max-w-2xl mx-auto" data-i18n="hero_title">
+                    <h2 id="landingHeroTitle" class="text-2xl md:text-4xl font-extrabold text-brand-deep mb-3 leading-tight max-w-2xl mx-auto" data-i18n="hero_title" data-dynamic-content>
                         Services, when you need them
                     </h2>
                     <p id="landingHeroDesc" class="text-sm md:text-base text-slate-500 max-w-lg mx-auto mb-6" data-i18n="hero_desc">
@@ -104,7 +106,7 @@
                         <form onsubmit="handleTrackRequest(event)" class="space-y-3.5 relative">
                             <input type="hidden" id="trackSelectedId">
                             <div>
-                                <input type="tel" id="trackPhone" required pattern="[0-9]{10}" data-i18n="track_phone" placeholder="Phone Number (10 Digits)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
+                                <input type="tel" id="trackPhone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" data-phone-limit data-i18n="track_phone" placeholder="Phone Number (10 Digits)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
                                 <p id="trackPhoneMsg" class="text-[9px] text-brand-accent mt-1 hidden font-bold text-right"></p>
                             </div>
                             <div class="relative">
@@ -256,7 +258,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-600 mb-1 ml-1 uppercase" data-i18n="mod_req_phone">Phone <span class="text-red-500">*</span></label>
-                        <input type="tel" id="reqPhone" required pattern="[0-9]{10}" placeholder="10 Digits" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                        <input type="tel" id="reqPhone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" data-phone-limit placeholder="10 Digits" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-accent">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-600 mb-1 ml-1 uppercase" data-i18n="mod_req_loc">Location <span class="text-red-500">*</span></label>
@@ -265,9 +267,7 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-600 mb-1 ml-1 uppercase" data-i18n="mod_req_dur">Duration <span class="text-red-500">*</span></label>
-                    <select id="reqDuration" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                        <option value="1 Week">1 Week</option><option value="1 Month">1 Month</option><option value="3 Months">3 Months</option><option value="Long Term">Long Term</option>
-                    </select>
+                    <input type="text" id="reqDuration" placeholder="Optional" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-accent">
                 </div>
                 <div class="pt-3">
                     <button type="submit" id="btn-submit-req" class="w-full bg-brand-deep text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-slate-900 transition flex justify-center items-center text-xs tracking-wide">
@@ -330,6 +330,7 @@
         window.setLanguage = function(lang) {
             currentLang = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
+                if (el.hasAttribute('data-dynamic-content') && appSettings.heroText) return;
                 const key = el.getAttribute('data-i18n');
                 if (translations[lang][key]) {
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = translations[lang][key]; 
@@ -629,12 +630,18 @@
                 showToast('Request submitted successfully.');
                 closeRequestModal(); navigateToUserPage('landing'); setTimeout(() => scrollToTracking(), 500);
                 if (appSettings.whatsapp) {
-                    const message = `New service request%0AName: ${encodeURIComponent(document.getElementById('reqName').value.trim())}%0APhone: ${encodeURIComponent(document.getElementById('reqPhone').value.trim())}%0AItem: ${encodeURIComponent(itemName)}%0ALocation: ${encodeURIComponent(document.getElementById('reqLoc').value.trim())}%0ADuration: ${encodeURIComponent(document.getElementById('reqDuration').value)}`;
+                    const itemLink = `${window.location.origin}${window.location.pathname}?item=${encodeURIComponent(document.getElementById('reqItemId').value)}`;
+                    const mainImage = activeDetailItem?.imagesArray?.[0] || '';
+                    const imageLink = mainImage.startsWith('http') ? mainImage : itemLink;
+                    const duration = document.getElementById('reqDuration').value.trim();
+                    const message = `New service request%0AName: ${encodeURIComponent(document.getElementById('reqName').value.trim())}%0APhone: ${encodeURIComponent(document.getElementById('reqPhone').value.trim())}%0AItem: ${encodeURIComponent(itemName)}%0ALocation: ${encodeURIComponent(document.getElementById('reqLoc').value.trim())}${duration ? `%0ADuration: ${encodeURIComponent(duration)}` : ''}%0AItem link: ${encodeURIComponent(itemLink)}%0AImage link: ${encodeURIComponent(imageLink)}`;
                     window.location.href = `https://wa.me/${appSettings.whatsapp.replace(/\D/g, '')}?text=${message}`;
                 }
             } catch (error) { showToast("Failed to submit request.", "error"); } 
             finally { btn.innerHTML = `Submit Request <i class="fa-solid fa-paper-plane ml-2"></i>`; btn.disabled = false; }
         };
+
+        document.querySelectorAll('input[data-phone-limit]').forEach(input => { input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 10); }); });
 
         const trackPhoneInp = document.getElementById('trackPhone');
         const trackNameInp = document.getElementById('trackName');
