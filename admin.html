@@ -354,6 +354,9 @@
 
         document.querySelectorAll('input[data-phone-limit]').forEach(input => { input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 10); }); });
 
+        ['requestSearch', 'requestSort'].forEach(id => document.getElementById(id)?.addEventListener(id === 'requestSearch' ? 'input' : 'change', () => window.renderAdminRequests?.()));
+        document.querySelectorAll('input[name="reqFilter"]').forEach(input => input.addEventListener('change', () => window.renderAdminRequests?.()));
+
         let adminDataListenersStarted = false;
         function startAdminDataListeners() {
             if (adminDataListenersStarted) return;
@@ -697,6 +700,12 @@
         };
         window.closeStockUsersModal = function() { document.getElementById('stockUsersModal').classList.add('hidden-view'); };
 
+        function refreshRequestBadges() {
+            const newReqs = requestsData.filter(request => request.status === 'Item Request').length;
+            const badgeDesk = document.getElementById('adm-req-badge'); const badgeMob = document.getElementById('mob-req-badge');
+            [badgeDesk, badgeMob].forEach(badge => { badge.innerText = newReqs; badge.classList.toggle('hidden', newReqs === 0); });
+        }
+
         window.renderAdminRequests = function() {
             const filter = document.querySelector('input[name="reqFilter"]:checked').value;
             const search = (document.getElementById('requestSearch')?.value || '').trim().toLowerCase();
@@ -718,14 +727,23 @@
             filteredReqs.forEach(req => {
                 const submitted = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleString() : 'Just submitted';
                 const duration = req.reqDuration ? req.reqDuration : 'Not specified';
-                let dropdownHtml = `<select aria-label="Update status" onchange="updateReqStatus('${req.id}', this.value, '${req.itemId}')" class="w-8 h-8 bg-white border border-slate-200 text-slate-600 text-[9px] rounded-lg px-1 font-bold focus:outline-none focus:ring-2 focus:ring-brand-accent">`;
-                statuses.forEach(status => { dropdownHtml += `<option value="${status}" ${req.status === status ? 'selected' : ''}>${status}</option>`; });
-                dropdownHtml += `</select>`;
-                container.innerHTML += `<article class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><div class="flex justify-between items-start gap-2 mb-3 pb-2 border-b border-slate-100"><div class="min-w-0"><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">${req.appId || 'Request'}</p><h4 class="font-bold text-slate-800 text-sm mt-0.5 truncate">${req.itemName}</h4><p class="text-[10px] text-slate-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i>${submitted}</p></div><div class="flex items-center gap-1 shrink-0"><span class="${statusStyle[req.status] || 'bg-slate-100 text-slate-600'} px-2 py-1 rounded text-[8px] font-black uppercase">${req.status === 'Item Request' ? 'Requested' : req.status}</span>${dropdownHtml}<button aria-label="Edit request" onclick="openRequestEdit('${req.id}')" class="w-8 h-8 flex items-center justify-center bg-blue-50 border border-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-pen text-[10px]"></i></button><button aria-label="Delete request" onclick="deleteRequest('${req.id}')" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-100 text-red-600 rounded-lg"><i class="fa-solid fa-trash-can text-[10px]"></i></button></div></div><div class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100"><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Applicant</span><span class="font-semibold text-slate-700">${req.reqName}</span></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Phone</span><a href="tel:${req.reqPhone}" class="font-bold text-brand-accent underline">${req.reqPhone}</a></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Location</span><span class="font-semibold text-slate-700">${req.reqLoc}</span></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Duration</span><span class="font-semibold text-slate-700">${duration}</span></div></div></article>`;
+                const menuHtml = statuses.map(status => `<button onclick="updateReqStatus('${req.id}', '${status}', '${req.itemId}')" class="w-full text-left px-3 py-2 text-xs font-semibold hover:bg-slate-50 ${req.status === status ? 'text-brand-accent' : 'text-slate-600'}">${status === 'Item Request' ? 'Requested' : status}</button>`).join('');
+                container.innerHTML += `<article class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm"><div class="flex justify-between items-start gap-2 mb-3 pb-2 border-b border-slate-100"><div class="min-w-0"><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">${req.appId || 'Request'}</p><h4 class="font-bold text-slate-800 text-sm mt-0.5 truncate">${req.itemName}</h4><p class="text-[10px] text-slate-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i>${submitted}</p></div><div class="flex items-center gap-1 shrink-0"><div class="relative"><button aria-label="Change status" onclick="toggleRequestStatusMenu('${req.id}')" class="${statusStyle[req.status] || 'bg-slate-100 text-slate-600'} px-2 py-1.5 rounded text-[8px] font-black uppercase flex items-center gap-1">${req.status === 'Item Request' ? 'Requested' : req.status}<i class="fa-solid fa-chevron-down text-[7px]"></i></button><div id="status-menu-${req.id}" class="hidden-view absolute right-0 top-8 z-30 w-36 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden">${menuHtml}</div></div><button aria-label="Edit request" onclick="openRequestEdit('${req.id}')" class="w-8 h-8 flex items-center justify-center bg-blue-50 border border-blue-100 text-blue-600 rounded-lg"><i class="fa-solid fa-pen text-[10px]"></i></button><button aria-label="Delete request" onclick="deleteRequest('${req.id}')" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-100 text-red-600 rounded-lg"><i class="fa-solid fa-trash-can text-[10px]"></i></button></div></div><div class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100"><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Applicant</span><span class="font-semibold text-slate-700">${req.reqName}</span></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Phone</span><a href="tel:${req.reqPhone}" class="font-bold text-brand-accent underline">${req.reqPhone}</a></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Location</span><span class="font-semibold text-slate-700">${req.reqLoc}</span></div><div><span class="text-slate-400 block text-[9px] uppercase font-bold">Duration</span><span class="font-semibold text-slate-700">${duration}</span></div></div></article>`;
             });
         };
 
+        window.toggleRequestStatusMenu = function(id) {
+            document.querySelectorAll('[id^="status-menu-"]').forEach(menu => { if (menu.id !== `status-menu-${id}`) menu.classList.add('hidden-view'); });
+            document.getElementById(`status-menu-${id}`)?.classList.toggle('hidden-view');
+        };
+
         window.updateReqStatus = async function(reqId, newStatus, itemId = null) {
+            const localRequest = requestsData.find(request => request.id === reqId);
+            const previousStatus = localRequest?.status;
+            if (!localRequest || previousStatus === newStatus) return;
+            localRequest.status = newStatus;
+            refreshRequestBadges();
+            renderAdminRequests();
             try {
                 const reqRefDoc = doc(reqRef, reqId);
                 const reqSnap = await getDoc(reqRefDoc);
@@ -737,7 +755,9 @@
                         // Moving TO Given -> Increase issuedQty
                         if (newStatus === 'Given' && oldStatus !== 'Given') {
                             if(((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) {
-                                renderAdminRequests(); // Revert dropdown
+                                localRequest.status = previousStatus;
+                                refreshRequestBadges();
+                                renderAdminRequests();
                                 return showToast("Item is out of stock!", "error");
                             }
                             await updateDoc(doc(invRef, itemId), { issuedQty: increment(1) });
@@ -758,8 +778,10 @@
                 await batch.commit();
                 showToast(`Status updated to ${newStatus}`);
             } catch(e) {
+                if (localRequest) localRequest.status = previousStatus;
+                refreshRequestBadges();
                 showToast("Error updating status", "error");
-                renderAdminRequests(); // Revert UI
+                renderAdminRequests();
             }
         };
 

@@ -228,7 +228,8 @@
 
             <footer class="text-center py-8 border-t border-slate-100 bg-white mt-auto pb-28">
                 <p id="footerCopyText" class="text-xs font-medium text-slate-400 mb-1" data-i18n="footer_copy">© 2026</p>
-                <p id="footerAddrText" class="hidden-view text-[10px] text-slate-400 max-w-xs mx-auto mb-5" data-i18n="footer_addr"></p>
+                <p id="footerAddrText" class="hidden-view text-[10px] text-slate-400 max-w-xs mx-auto mb-3" data-i18n="footer_addr"></p>
+                <p class="text-[10px] text-slate-400">Developed by <a href="https://www.instagram.com/muhammed_sanjide_p" target="_blank" rel="noopener noreferrer" class="font-bold text-brand-accent underline">HADI MAHIRI FAIZY</a></p>
             </footer>
         </div>
 
@@ -326,6 +327,8 @@
         let publicTrackingReady = false;
         let fetchedTrackingRequests = [];
         let initialLoadChecked = false; // Used for deep linking check
+        let landingSliderTimer = null;
+        let detailSliderTimer = null;
 
         window.setLanguage = function(lang) {
             currentLang = lang;
@@ -428,21 +431,23 @@
         function renderLandingSlider() {
             const wrapper = document.getElementById('landingSliderWrapper'); const container = document.getElementById('landingSlider'); const dots = document.getElementById('landingSliderDots');
             const images = appSettings.sliderImages || [];
+            clearInterval(landingSliderTimer);
             if(images.length === 0) { wrapper.classList.add('hidden-view'); return; }
             wrapper.classList.remove('hidden-view'); container.innerHTML = ''; dots.innerHTML = '';
-
+            const updateDots = () => {
+                const currentIndex = Math.round(container.scrollLeft / container.clientWidth);
+                Array.from(dots.children).forEach((dot, i) => dot.className = `w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-white' : 'bg-white/50'}`);
+            };
             images.forEach((img, index) => {
                 container.innerHTML += `<div class="slider-slide relative h-full w-full bg-slate-100 flex items-center justify-center"><img src="${img}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div></div>`;
                 dots.innerHTML += `<div class="w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-white' : 'bg-white/50'} transition-colors"></div>`;
             });
-
-            if(images.length > 1) {
-                container.addEventListener('scroll', () => {
-                    const slideWidth = container.clientWidth;
-                    const currentIndex = Math.round(container.scrollLeft / slideWidth);
-                    Array.from(dots.children).forEach((dot, i) => dot.className = `w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-white' : 'bg-white/50'}`);
-                });
-            }
+            container.onscroll = updateDots;
+            if(images.length > 1) landingSliderTimer = setInterval(() => {
+                const currentIndex = Math.round(container.scrollLeft / container.clientWidth);
+                const nextIndex = (currentIndex + 1) % images.length;
+                container.scrollTo({ left: nextIndex * container.clientWidth, behavior: 'smooth' });
+            }, 4500);
         }
 
         window.renderStoreProducts = function() {
@@ -520,23 +525,15 @@
 
             const images = item.imagesArray || [];
             const container = document.getElementById('productDetailSlider'); const dots = document.getElementById('sliderDots');
-            container.innerHTML = ''; dots.innerHTML = '';
-
-            if (images.length === 0) { container.innerHTML = `<div class="slider-slide w-full h-full flex items-center justify-center bg-slate-50"><i class="fa-solid fa-image text-slate-300 text-4xl"></i></div>`; } 
+            clearInterval(detailSliderTimer); container.innerHTML = ''; dots.innerHTML = '';
+            if (images.length === 0) { container.innerHTML = `<div class="slider-slide w-full h-full flex items-center justify-center bg-slate-50"><i class="fa-solid fa-image text-slate-300 text-4xl"></i></div>`; }
             else {
-                images.forEach((url, idx) => {
-                    container.innerHTML += `<div class="slider-slide relative h-full w-full flex items-center justify-center"><img src="${url}" class="w-full h-full object-contain p-4 drop-shadow-md"></div>`;
-                    dots.innerHTML += `<div class="w-1.5 h-1.5 rounded-full transition-colors ${idx === 0 ? 'bg-brand-accent' : 'bg-slate-300'}"></div>`;
-                });
-                if(images.length > 1) {
-                    container.addEventListener('scroll', () => {
-                        const slideWidth = container.clientWidth;
-                        const currentIndex = Math.round(container.scrollLeft / slideWidth);
-                        Array.from(dots.children).forEach((dot, i) => dot.className = `w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-brand-accent' : 'bg-slate-300'}`);
-                    });
-                }
+                const updateDots = () => { const currentIndex = Math.round(container.scrollLeft / container.clientWidth); Array.from(dots.children).forEach((dot, i) => dot.className = `w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-brand-accent' : 'bg-slate-300'}`); };
+                images.forEach((url, idx) => { container.innerHTML += `<div class="slider-slide relative h-full w-full flex items-center justify-center"><img src="${url}" loading="lazy" decoding="async" class="w-full h-full object-contain p-4 drop-shadow-md"></div>`; dots.innerHTML += `<div class="w-1.5 h-1.5 rounded-full transition-colors ${idx === 0 ? 'bg-brand-accent' : 'bg-slate-300'}"></div>`; });
+                container.onscroll = updateDots;
+                if(images.length > 1) detailSliderTimer = setInterval(() => { const nextIndex = (Math.round(container.scrollLeft / container.clientWidth) + 1) % images.length; container.scrollTo({ left: nextIndex * container.clientWidth, behavior: 'smooth' }); }, 4000);
             }
-            
+
             // Adjust URL without reloading the page for deep linking
             const newUrl = `${window.location.origin}${window.location.pathname}?item=${id}`;
             window.history.pushState({path: newUrl}, '', newUrl);
@@ -632,10 +629,17 @@
                 if (appSettings.whatsapp) {
                     const itemLink = `${window.location.origin}${window.location.pathname}?item=${encodeURIComponent(document.getElementById('reqItemId').value)}`;
                     const mainImage = activeDetailItem?.imagesArray?.[0] || '';
-                    const imageLink = mainImage.startsWith('http') ? mainImage : itemLink;
                     const duration = document.getElementById('reqDuration').value.trim();
-                    const message = `New service request%0AName: ${encodeURIComponent(document.getElementById('reqName').value.trim())}%0APhone: ${encodeURIComponent(document.getElementById('reqPhone').value.trim())}%0AItem: ${encodeURIComponent(itemName)}%0ALocation: ${encodeURIComponent(document.getElementById('reqLoc').value.trim())}${duration ? `%0ADuration: ${encodeURIComponent(duration)}` : ''}%0AItem link: ${encodeURIComponent(itemLink)}%0AImage link: ${encodeURIComponent(imageLink)}`;
-                    window.location.href = `https://wa.me/${appSettings.whatsapp.replace(/\D/g, '')}?text=${message}`;
+                    const messageText = `New service request\nName: ${document.getElementById('reqName').value.trim()}\nPhone: ${document.getElementById('reqPhone').value.trim()}\nItem: ${itemName}\nLocation: ${document.getElementById('reqLoc').value.trim()}${duration ? `\nDuration: ${duration}` : ''}\nItem link: ${itemLink}`;
+                    let sharedImage = false;
+                    try {
+                        if (mainImage && navigator.share && navigator.canShare) {
+                            const blob = await fetch(mainImage).then(response => response.blob());
+                            const file = new File([blob], 'requested-item.jpg', { type: blob.type || 'image/jpeg' });
+                            if (navigator.canShare({ files: [file] })) { await navigator.share({ title: itemName, text: messageText, url: itemLink, files: [file] }); sharedImage = true; }
+                        }
+                    } catch (_) { /* Use the WhatsApp text fallback below. */ }
+                    if (!sharedImage) window.location.href = `https://wa.me/${appSettings.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(messageText)}`;
                 }
             } catch (error) { showToast("Failed to submit request.", "error"); } 
             finally { btn.innerHTML = `Submit Request <i class="fa-solid fa-paper-plane ml-2"></i>`; btn.disabled = false; }
