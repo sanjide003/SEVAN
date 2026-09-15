@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBIZr2FTMHyzbtayMssjxtN1o6dDME2_hA",
@@ -14,14 +14,18 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+// Persist Firestore data locally so repeat visits use fewer network reads on the free plan.
+const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
 
-// Unified Database Route Mapping (SKSSF)
+// Unified database route mapping
 const rootPath = "SKSSF/charity_app";
 
 const invRef = collection(db, `${rootPath}/inventory`);
 const reqRef = collection(db, `${rootPath}/requests`);
 const admRef = collection(db, `${rootPath}/admins`);
 const setRef = doc(db, `${rootPath}/settings/app_settings`);
+const trackRef = collection(db, `${rootPath}/tracking`);
 
-export { app, auth, db, invRef, reqRef, admRef, setRef, rootPath };
+export { app, auth, db, invRef, reqRef, admRef, setRef, trackRef, rootPath };

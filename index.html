@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="docTitle">SKSSF Santhwanam - Service Center</title>
+    <title id="docTitle">Service Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -39,7 +39,7 @@
     <!-- Global Loading Screen -->
     <div id="global-loader">
         <div class="spinner"></div>
-        <div class="loader-text">Loading Santhwanam...</div>
+        <div class="loader-text">Loading…</div>
     </div>
 
     <header class="bg-brand-deep text-white shadow-md z-30 shrink-0 relative">
@@ -50,8 +50,8 @@
                     <img id="appHeaderLogoImg" class="w-full h-full object-cover hidden" alt="Logo" onerror="this.classList.add('hidden'); document.getElementById('appHeaderIcon').classList.remove('hidden');">
                 </div>
                 <div>
-                    <h1 id="appHeaderTitle" class="text-base font-bold tracking-wide leading-tight">SKSSF Santhwanam</h1>
-                    <p id="appHeaderSub" class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Service Center</p>
+                    <h1 id="appHeaderTitle" class="text-base font-bold tracking-wide leading-tight">Service Portal</h1>
+                    <p id="appHeaderSub" class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Community Services</p>
                 </div>
             </div>
             
@@ -70,12 +70,12 @@
             
             <section id="user-page-landing" class="w-full relative pb-10 animate-fade">
                 <div class="bg-gradient-to-b from-white to-slate-50 px-4 py-8 md:py-14 text-center border-b border-slate-100">
-                    <span class="bg-indigo-50 text-brand-accent text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-widest mb-4 inline-block shadow-sm" data-i18n="hero_badge">Free Community Service</span>
+                    <span class="bg-indigo-50 text-brand-accent text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-widest mb-4 inline-block shadow-sm" data-i18n="hero_badge">Community Services</span>
                     <h2 id="landingHeroTitle" class="text-2xl md:text-4xl font-extrabold text-brand-deep mb-3 leading-tight max-w-2xl mx-auto" data-i18n="hero_title">
-                        A helping hand for patients and the needy
+                        Services, when you need them
                     </h2>
                     <p id="landingHeroDesc" class="text-sm md:text-base text-slate-500 max-w-lg mx-auto mb-6" data-i18n="hero_desc">
-                        Request wheelchairs, patient beds, walking sticks, and other medical equipment free of cost.
+                        Browse the services made available by the administrator.
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -100,21 +100,13 @@
                 <div id="section-tracking" class="px-4 py-8 mt-4 bg-white border-y border-slate-100">
                     <div class="max-w-md mx-auto bg-slate-50 p-6 rounded-3xl border border-slate-200/80 shadow-sm relative">
                         <h3 class="font-bold text-slate-800 text-base mb-1 text-center" data-i18n="track_title">Track Status</h3>
-                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium" data-i18n="track_desc">Enter Phone Number first to search names.</p>
+                        <p class="text-[11px] text-slate-500 text-center mb-5 font-medium">Enter the tracking ID received after submitting your request.</p>
                         <form onsubmit="handleTrackRequest(event)" class="space-y-3.5 relative">
-                            <input type="hidden" id="trackSelectedAppId">
-                            
                             <div>
-                                <input type="tel" id="trackPhone" required pattern="[0-9]{10}" data-i18n="track_phone" placeholder="Phone Number (10 Digits)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
-                                <p id="trackPhoneMsg" class="text-[9px] text-brand-accent mt-1 hidden font-bold text-right"><i class="fa-solid fa-circle-check"></i> Phone Verified</p>
+                                <label class="block text-[10px] font-bold text-slate-600 mb-1 ml-1 uppercase">Tracking ID</label>
+                                <input type="text" id="trackId" required autocomplete="off" placeholder="Paste your tracking ID" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent">
                             </div>
-                            
-                            <div class="relative">
-                                <input type="text" id="trackName" disabled autocomplete="off" data-i18n="track_name" placeholder="Type first 3 letters of name..." class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-accent transition-colors disabled:opacity-60">
-                                <div id="nameSuggestions" class="autocomplete-dropdown"></div>
-                            </div>
-
-                            <button type="submit" id="btn-check-status" disabled class="w-full bg-slate-300 text-slate-500 py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 mt-2">
+                            <button type="submit" id="btn-check-status" class="w-full bg-slate-800 text-white py-3 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 mt-2">
                                 <i class="fa-solid fa-magnifying-glass-location"></i> <span data-i18n="track_btn">Check Status</span>
                             </button>
                         </form>
@@ -122,7 +114,7 @@
                     </div>
                 </div>
 
-                <div class="px-4 py-8 bg-slate-50">
+                <div id="contactSection" class="hidden-view px-4 py-8 bg-slate-50">
                     <div class="max-w-md mx-auto">
                         <h3 class="font-bold text-slate-800 text-center mb-5 text-base" data-i18n="contact_title">Contact Us</h3>
                         <div class="grid grid-cols-2 gap-3">
@@ -228,8 +220,8 @@
             </section>
 
             <footer class="text-center py-8 border-t border-slate-100 bg-white mt-auto pb-28">
-                <p id="footerCopyText" class="text-xs font-medium text-slate-400 mb-1" data-i18n="footer_copy">Copyright © 2026 SKSSF Santhwanam.</p>
-                <p id="footerAddrText" class="text-[10px] text-slate-400 max-w-xs mx-auto mb-5" data-i18n="footer_addr">Address: SKSSF Center, Kerala.</p>
+                <p id="footerCopyText" class="text-xs font-medium text-slate-400 mb-1" data-i18n="footer_copy">© 2026</p>
+                <p id="footerAddrText" class="hidden-view text-[10px] text-slate-400 max-w-xs mx-auto mb-5" data-i18n="footer_addr"></p>
             </footer>
         </div>
 
@@ -284,9 +276,9 @@
     <div id="toastContainer" class="fixed top-5 left-0 right-0 z-[120] flex flex-col items-center pointer-events-none space-y-2 px-4"></div>
 
     <script type="module">
-        import { auth, db, invRef, reqRef, setRef } from './firebase_configuration.js';
-        import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { onSnapshot, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { auth, invRef, reqRef, setRef, trackRef } from './firebase_configuration.js';
+        import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { onSnapshot, doc, getDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Remove the loading screen once Tailwind and scripts are ready
         window.addEventListener('load', () => {
@@ -299,9 +291,9 @@
 
         const translations = {
             en: {
-                hero_badge: "Community Service", hero_title: "A helping hand for the needy", hero_desc: "Request medical equipment and other services easily.",
-                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter Phone Number first to search names.",
-                track_phone: "Phone Number (10 Digits)", track_name: "Type first 3 letters of name...", track_btn: "Check Status",
+                hero_badge: "Community Services", hero_title: "Services when you need them", hero_desc: "Browse services made available by the administrator.",
+                btn_browse_store: "Browse Services", track_title: "Track Application", track_desc: "Enter your tracking ID to check the latest status.",
+                track_phone: "Tracking ID", track_name: "", track_btn: "Check Status",
                 contact_title: "Contact Us", contact_wa: "WhatsApp Us", contact_wa_desc: "Message for queries", contact_call: "Call Us", contact_call_desc: "For emergencies",
                 inv_search: "Search...", inv_title: "Available Listings", details_title: "Details", lbl_av: "Stock Status", lbl_price: "Fee / Deposit",
                 adm_inv_desc: "Description", lbl_notes: "Notes", str_req_btn: "Request Assistance", nav_home: "Home", nav_srv: "Services",
@@ -310,9 +302,9 @@
                 flt_all: "All", flt_eq: "Equipments", flt_srv: "Services", type_eq: "Equipment", type_srv: "Service"
             },
             ml: {
-                hero_badge: "സന്നദ്ധ സേവനം", hero_title: "രോഗികൾക്കും ആവശ്യക്കാർക്കും ഒരു കൈത്താങ്ങ്", hero_desc: "വീൽചെയർ, ബെഡ് തുടങ്ങിയവയും മറ്റ് സേവനങ്ങളും ആവശ്യപ്പെടാം.",
+                hero_badge: "സേവനങ്ങൾ", hero_title: "നിങ്ങൾക്ക് ആവശ്യമായ സേവനങ്ങൾ", hero_desc: "അഡ്മിൻ നൽകുന്ന സേവനങ്ങൾ ഇവിടെ കാണാം.",
                 btn_browse_store: "സേവനങ്ങൾ കാണുക", track_title: "അപേക്ഷ പരിശോധിക്കുക", track_desc: "ഫോൺ നമ്പർ നൽകിയ ശേഷം പേര് തിരയുക.",
-                track_phone: "ഫോൺ നമ്പർ (10 അക്കം)", track_name: "പേരിന്റെ ആദ്യ 3 അക്ഷരം ടൈപ്പ് ചെയ്യുക...", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
+                track_phone: "ട്രാക്കിംഗ് ഐഡി", track_name: "", track_btn: "സ്റ്റാറ്റസ് അറിയുക",
                 contact_title: "ബന്ധപ്പെടുക", contact_wa: "വാട്സ്ആപ്പ്", contact_wa_desc: "വിവരങ്ങൾ അറിയാൻ", contact_call: "വിളിക്കുക", contact_call_desc: "അടിയന്തര ആവശ്യങ്ങൾക്ക്",
                 inv_search: "സെർച്ച് ചെയ്യുക...", inv_title: "ലഭ്യമായവ", details_title: "കൂടുതൽ വിവരങ്ങൾ", lbl_av: "സ്റ്റോക്ക്", lbl_price: "ഫീസ് / നിക്ഷേപം",
                 adm_inv_desc: "വിവരങ്ങൾ", lbl_notes: "നോട്സ്", str_req_btn: "അപേക്ഷ നൽകുക", nav_home: "ഹോം", nav_srv: "സേവനങ്ങൾ",
@@ -326,7 +318,7 @@
         let inventoryData = [];
         let appSettings = {};
         let activeDetailItem = null;
-        let fetchedTrackingRequests = []; 
+        let publicTrackingReady = false;
         let initialLoadChecked = false; // Used for deep linking check
 
         window.setLanguage = function(lang) {
@@ -380,35 +372,44 @@
             }
         };
 
-        signInAnonymously(auth).catch(e => console.error("Auth error", e));
+        // Start data listeners only after anonymous authentication succeeds.
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !user.isAnonymous || publicTrackingReady) return;
+            publicTrackingReady = true;
 
-        onSnapshot(setRef, (docSnap) => {
-            if (docSnap.exists()) { appSettings = docSnap.data(); applyAppSettings(); }
-        });
+            onSnapshot(setRef, (docSnap) => {
+                appSettings = docSnap.exists() ? docSnap.data() : {};
+                applyAppSettings();
+            }, () => applyAppSettings());
 
-        onSnapshot(invRef, (snapshot) => {
-            inventoryData = [];
-            snapshot.forEach(doc => inventoryData.push({ id: doc.id, ...doc.data() }));
-            renderStoreProducts();
-            
-            // Check for deep link on first load
-            if(!initialLoadChecked) {
-                initialLoadChecked = true;
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedItemId = urlParams.get('item');
-                if(sharedItemId) {
-                    setTimeout(() => openProductDetails(sharedItemId), 300);
+            onSnapshot(invRef, (snapshot) => {
+                inventoryData = [];
+                snapshot.forEach(doc => inventoryData.push({ id: doc.id, ...doc.data() }));
+                renderStoreProducts();
+                if(!initialLoadChecked) {
+                    initialLoadChecked = true;
+                    const sharedItemId = new URLSearchParams(window.location.search).get('item');
+                    if(sharedItemId) setTimeout(() => openProductDetails(sharedItemId), 300);
                 }
-            }
+            }, () => renderStoreProducts());
         });
+        signInAnonymously(auth).catch(() => showToast('Unable to connect. Please try again.', 'error'));
 
         function applyAppSettings() {
             if(appSettings.title) { document.getElementById('appHeaderTitle').innerText = appSettings.title; document.getElementById('docTitle').innerText = appSettings.title; }
             if(appSettings.sub) document.getElementById('appHeaderSub').innerText = appSettings.sub;
             if(appSettings.heroText) document.getElementById('landingHeroTitle').innerText = appSettings.heroText;
-            if(appSettings.phone) document.getElementById('linkContactCall').href = `tel:${appSettings.phone}`;
-            if(appSettings.whatsapp) document.getElementById('linkContactWa').href = `https://wa.me/${appSettings.whatsapp}`;
-            if(appSettings.address) document.getElementById('footerAddrText').innerText = appSettings.address;
+            const contactSection = document.getElementById('contactSection');
+            const callLink = document.getElementById('linkContactCall');
+            const whatsappLink = document.getElementById('linkContactWa');
+            if(appSettings.phone) callLink.href = `tel:${appSettings.phone}`;
+            if(appSettings.whatsapp) whatsappLink.href = `https://wa.me/${appSettings.whatsapp}`;
+            contactSection.classList.toggle('hidden-view', !appSettings.phone && !appSettings.whatsapp);
+            callLink.classList.toggle('hidden-view', !appSettings.phone);
+            whatsappLink.classList.toggle('hidden-view', !appSettings.whatsapp);
+            const address = document.getElementById('footerAddrText');
+            if(appSettings.address) { address.innerText = appSettings.address; address.classList.remove('hidden-view'); }
+            else { address.innerText = ''; address.classList.add('hidden-view'); }
             if(appSettings.logoUrl) {
                 const img = document.getElementById('appHeaderLogoImg');
                 img.src = appSettings.logoUrl; img.classList.remove('hidden');
@@ -424,7 +425,7 @@
             wrapper.classList.remove('hidden-view'); container.innerHTML = ''; dots.innerHTML = '';
 
             images.forEach((img, index) => {
-                container.innerHTML += `<div class="slider-slide relative h-full w-full bg-slate-100 flex items-center justify-center"><img src="${img}" class="absolute inset-0 w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div></div>`;
+                container.innerHTML += `<div class="slider-slide relative h-full w-full bg-slate-100 flex items-center justify-center"><img src="${img}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div></div>`;
                 dots.innerHTML += `<div class="w-1.5 h-1.5 rounded-full ${index === 0 ? 'bg-white' : 'bg-white/50'} transition-colors"></div>`;
             });
 
@@ -448,14 +449,14 @@
             
             document.getElementById('storeItemsCount').innerText = `${filtered.length} items`;
 
-            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center bg-white rounded-3xl border border-slate-100"><p class="text-xs text-slate-400">No items found.</p></div>`; return; }
+            if (filtered.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center bg-white rounded-3xl border border-slate-100"><p class="text-xs text-slate-400">No services have been added yet.</p></div>`; return; }
 
             filtered.forEach(item => {
                 const available = (item.totalQty || 0) - (item.issuedQty || 0);
                 const isAvail = available > 0;
                 const images = item.imagesArray || [];
                 const mainImg = images.length > 0 ? images[0] : null;
-                const imgHtml = mainImg ? `<img src="${mainImg}" class="w-full h-full object-contain p-2" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden');"><i class="fa-solid fa-image text-slate-300 text-3xl hidden"></i>` : `<i class="fa-solid fa-image text-slate-300 text-3xl"></i>`;
+                const imgHtml = mainImg ? `<img src="${mainImg}" loading="lazy" decoding="async" class="w-full h-full object-contain p-2" onerror="this.src=''; this.className='hidden'; this.nextElementSibling.classList.remove('hidden');"><i class="fa-solid fa-image text-slate-300 text-3xl hidden"></i>` : `<i class="fa-solid fa-image text-slate-300 text-3xl"></i>`;
 
                 const typeIcon = item.itemType === 'service' ? '<i class="fa-solid fa-hand-holding-heart text-amber-500"></i>' : '<i class="fa-solid fa-box text-brand-accent"></i>';
 
@@ -549,7 +550,7 @@
             
             const shareUrl = `${window.location.origin}${window.location.pathname}?item=${activeDetailItem.id}`;
             const itemType = activeDetailItem.itemType === 'service' ? 'Service' : 'Equipment';
-            const shareText = `Check out this free ${itemType} available at SKSSF Santhwanam: ${activeDetailItem.name}\n\n${shareUrl}`;
+            const shareText = `Check out this ${itemType}: ${activeDetailItem.name}\n\n${shareUrl}`;
             
             try {
                 if (navigator.canShare && activeDetailItem.imagesArray && activeDetailItem.imagesArray.length > 0) {
@@ -561,8 +562,8 @@
                         if (navigator.canShare({ files: [file] })) {
                             await navigator.share({
                                 files: [file],
-                                title: `SKSSF Santhwanam - ${activeDetailItem.name}`,
-                                text: `SKSSF Santhwanam - ${activeDetailItem.name}\n\n${shareUrl}`
+                                title: `Service Portal - ${activeDetailItem.name}`,
+                                text: `Service Portal - ${activeDetailItem.name}\n\n${shareUrl}`
                             });
                             if (btn) { btn.innerHTML = originalHtml; btn.disabled = false; }
                             return;
@@ -574,7 +575,7 @@
                 
                 if (navigator.share) {
                     await navigator.share({
-                        title: `SKSSF Santhwanam - ${activeDetailItem.name}`,
+                        title: `Service Portal - ${activeDetailItem.name}`,
                         text: `Check out ${activeDetailItem.name}`,
                         url: shareUrl
                     });
@@ -605,103 +606,53 @@
             const btn = document.getElementById('btn-submit-req'); btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`; btn.disabled = true;
 
             try {
-                const appIdStrGen = `SW-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
-                await addDoc(reqRef, {
-                    appId: appIdStrGen, itemId: document.getElementById('reqItemId').value, itemName: document.getElementById('reqItemName').value,
-                    reqName: document.getElementById('reqName').value, reqPhone: document.getElementById('reqPhone').value,
-                    reqLoc: document.getElementById('reqLoc').value, reqDuration: document.getElementById('reqDuration').value,
-                    status: 'Item Request', createdAt: serverTimestamp() 
+                const requestDoc = doc(reqRef);
+                const trackingDoc = doc(trackRef);
+                const trackingId = trackingDoc.id;
+                const itemName = document.getElementById('reqItemName').value;
+                const batch = writeBatch(requestDoc.firestore);
+                batch.set(requestDoc, {
+                    appId: `REQ-${new Date().getFullYear()}-${requestDoc.id.slice(0, 6).toUpperCase()}`,
+                    trackingId, itemId: document.getElementById('reqItemId').value, itemName,
+                    reqName: document.getElementById('reqName').value.trim(), reqPhone: document.getElementById('reqPhone').value.trim(),
+                    reqLoc: document.getElementById('reqLoc').value.trim(), reqDuration: document.getElementById('reqDuration').value,
+                    status: 'Item Request', createdAt: serverTimestamp()
                 });
-                showToast(`Request Submitted! Tracking ID: ${appIdStrGen}`);
+                batch.set(trackingDoc, { itemName, status: 'Item Request', createdAt: serverTimestamp() });
+                await batch.commit();
+                showToast(`Request submitted. Save this tracking ID: ${trackingId}`);
                 closeRequestModal(); navigateToUserPage('landing'); setTimeout(() => scrollToTracking(), 500);
             } catch (error) { showToast("Failed to submit request.", "error"); } 
             finally { btn.innerHTML = `Submit Request <i class="fa-solid fa-paper-plane ml-2"></i>`; btn.disabled = false; }
         };
 
-        const trackPhoneInp = document.getElementById('trackPhone');
-        const trackNameInp = document.getElementById('trackName');
-        const nameSuggestions = document.getElementById('nameSuggestions');
-        const checkBtn = document.getElementById('btn-check-status');
-        const phoneMsg = document.getElementById('trackPhoneMsg');
-
-        // Phone Input Listener - Fetch requests for phone securely
-        trackPhoneInp.addEventListener('input', async (e) => {
-            const val = e.target.value.trim();
-            trackNameInp.disabled = true; trackNameInp.value = ''; nameSuggestions.style.display = 'none';
-            phoneMsg.classList.add('hidden'); checkBtn.disabled = true; document.getElementById('trackSelectedAppId').value = '';
-
-            if(val.length === 10) {
-                try {
-                    const q = query(reqRef, where("reqPhone", "==", val));
-                    const snap = await getDocs(q);
-                    fetchedTrackingRequests = snap.docs.map(d => d.data());
-                    
-                    if(fetchedTrackingRequests.length > 0) {
-                        trackNameInp.disabled = false; trackNameInp.classList.replace('bg-slate-100', 'bg-white');
-                        phoneMsg.classList.remove('hidden'); phoneMsg.innerText = "Phone matches found. Type name."; phoneMsg.className = "text-[9px] text-emerald-600 mt-1 font-bold text-right";
-                    } else {
-                        phoneMsg.classList.remove('hidden'); phoneMsg.innerText = "No requests found for this number."; phoneMsg.className = "text-[9px] text-red-500 mt-1 font-bold text-right";
-                    }
-                } catch(err) { console.error("Error fetching", err); }
-            } else { trackNameInp.classList.replace('bg-white', 'bg-slate-100'); }
-        });
-
-        // Name Input Listener - Show Autocomplete based on fetched data
-        trackNameInp.addEventListener('input', (e) => {
-            const val = e.target.value.trim().toLowerCase();
-            nameSuggestions.innerHTML = '';
-            checkBtn.disabled = true; document.getElementById('trackSelectedAppId').value = '';
-            
-            if(val.length >= 3) {
-                const matches = fetchedTrackingRequests.filter(r => r.reqName.toLowerCase().includes(val));
-                if(matches.length > 0) {
-                    matches.forEach(m => {
-                        const div = document.createElement('div');
-                        div.className = "autocomplete-item";
-                        div.innerHTML = `<span class="font-bold">${m.reqName}</span> <br><span class="text-[9px] text-slate-400">Item: ${m.itemName}</span>`;
-                        div.onclick = () => {
-                            trackNameInp.value = m.reqName;
-                            document.getElementById('trackSelectedAppId').value = m.appId;
-                            nameSuggestions.style.display = 'none';
-                            checkBtn.disabled = false; checkBtn.classList.replace('bg-slate-300', 'bg-slate-800'); checkBtn.classList.replace('text-slate-500', 'text-white');
-                        };
-                        nameSuggestions.appendChild(div);
-                    });
-                    nameSuggestions.style.display = 'block';
-                } else { nameSuggestions.style.display = 'none'; }
-            } else { nameSuggestions.style.display = 'none'; }
-        });
-
-        document.addEventListener('click', (e) => { if (e.target !== trackNameInp) nameSuggestions.style.display = 'none'; });
-
-        window.handleTrackRequest = function(e) {
+        window.handleTrackRequest = async function(e) {
             e.preventDefault();
-            const appId = document.getElementById('trackSelectedAppId').value;
-            const req = fetchedTrackingRequests.find(r => r.appId === appId);
             const resultArea = document.getElementById('trackResultArea');
-            
-            if(!req) return;
-            
-            resultArea.classList.remove('hidden-view');
-            let statusHtml = '';
-            if(req.status === 'Item Request') statusHtml = `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Requested</span>`;
-            else if(req.status === 'Pending') statusHtml = `<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Pending</span>`;
-            else if(req.status === 'Given') statusHtml = `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Given</span>`;
-            else if(req.status === 'Returned') statusHtml = `<span class="bg-slate-200 text-slate-700 px-2 py-1 rounded font-bold text-[10px] uppercase">Returned</span>`;
-
-            const dateStr = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : 'N/A';
-            resultArea.innerHTML = `
-                <div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade">
-                    <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2">
-                        <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">App ID</p><p class="font-black text-slate-800 text-sm">${req.appId}</p></div>
-                        ${statusHtml}
-                    </div>
-                    <div class="space-y-1.5 text-xs">
-                        <p><span class="text-slate-500 font-medium">Item:</span> <span class="font-bold text-slate-800">${req.itemName}</span></p>
-                        <p><span class="text-slate-500 font-medium">Applicant:</span> <span class="font-bold text-slate-800">${req.reqName}</span></p>
-                        <p><span class="text-slate-500 font-medium">Applied:</span> <span class="font-bold text-slate-800">${dateStr}</span></p>
-                    </div>
-                </div>`;
+            const trackingId = document.getElementById('trackId').value.trim();
+            const btn = document.getElementById('btn-check-status');
+            btn.disabled = true;
+            try {
+                const snap = await getDoc(doc(trackRef, trackingId));
+                if (!snap.exists()) {
+                    resultArea.innerHTML = '<p class="text-xs text-red-500 text-center">Tracking ID not found.</p>';
+                    resultArea.classList.remove('hidden-view');
+                    return;
+                }
+                const req = snap.data();
+                const statuses = {
+                    'Item Request': ['Requested', 'bg-amber-100 text-amber-700'],
+                    Pending: ['Pending', 'bg-blue-100 text-blue-700'],
+                    Given: ['Given', 'bg-emerald-100 text-emerald-700'],
+                    Returned: ['Returned', 'bg-slate-200 text-slate-700']
+                };
+                const [label, badgeClass] = statuses[req.status] || ['Updated', 'bg-slate-200 text-slate-700'];
+                const dateStr = req.createdAt ? new Date(req.createdAt.toMillis()).toLocaleDateString() : '';
+                resultArea.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-xl shadow-sm text-left animate-fade"><div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-2"><div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Tracking ID</p><p class="font-black text-slate-800 text-sm break-all">${trackingId}</p></div><span class="${badgeClass} px-2 py-1 rounded font-bold text-[10px] uppercase">${label}</span></div><div class="space-y-1.5 text-xs"><p><span class="text-slate-500 font-medium">Item:</span> <span class="font-bold text-slate-800">${req.itemName}</span></p>${dateStr ? `<p><span class="text-slate-500 font-medium">Applied:</span> <span class="font-bold text-slate-800">${dateStr}</span></p>` : ''}</div></div>`;
+                resultArea.classList.remove('hidden-view');
+            } catch (_) {
+                showToast('Unable to check status. Please try again.', 'error');
+            } finally { btn.disabled = false; }
         };
 
         window.addEventListener('popstate', () => {

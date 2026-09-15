@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SKSSF Santhwanam - Admin Portal</title>
+    <title>Service Portal - Admin</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -44,7 +44,7 @@
                 <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20"><i class="fa-solid fa-user-lock text-xl text-indigo-200"></i></div>
                 <div>
                     <h1 class="text-base font-bold tracking-wide leading-tight">Admin Portal</h1>
-                    <p class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">SKSSF Santhwanam</p>
+                    <p class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Service Portal</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -69,7 +69,7 @@
                         <label class="block text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Admin Email</label>
                         <div class="relative">
                             <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                            <input type="email" id="adminEmail" required placeholder="admin@skssf.com" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none">
+                            <input type="email" id="adminEmail" required placeholder="admin@example.com" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-sm focus:ring-2 focus:ring-blue-500 transition-all outline-none">
                         </div>
                     </div>
                     <div>
@@ -162,8 +162,8 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div><label class="block font-semibold text-slate-600 mb-1">Listing Type *</label>
                                     <select id="invType" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent">
-                                        <option value="equipment">Equipment (Wheelchair, Bed etc)</option>
-                                        <option value="service">Service (Ambulance, Care etc)</option>
+                                        <option value="equipment">Equipment</option>
+                                        <option value="service">Service</option>
                                     </select>
                                 </div>
                                 <div><label class="block font-semibold text-slate-600 mb-1">Name / Title *</label><input type="text" id="invName" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-accent"></div>
@@ -305,9 +305,9 @@
     <div id="toastContainer" class="fixed top-5 left-0 right-0 z-[120] flex flex-col items-center pointer-events-none space-y-2 px-4"></div>
 
     <script type="module">
-        import { auth, db, invRef, reqRef, admRef, setRef } from './firebase_configuration.js';
+        import { auth, invRef, reqRef, admRef, setRef, trackRef } from './firebase_configuration.js';
         import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDoc, serverTimestamp, setDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { onSnapshot, addDoc, updateDoc, deleteDoc, doc, getDoc, serverTimestamp, setDoc, increment, writeBatch, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Remove the loading screen once Tailwind and scripts are ready
         window.addEventListener('load', () => {
@@ -583,7 +583,7 @@
         window.renderAdminSliderPreview = function() {
             const container = document.getElementById('adminSliderPreview'); container.innerHTML = ''; const imgs = appSettings.sliderImages || [];
             if(imgs.length === 0) { container.innerHTML = `<span class="text-xs text-slate-400">No images</span>`; return; }
-            imgs.forEach((img, idx) => { const sizeKb = Math.round((img.length * 3)/4/1024); container.innerHTML += `<div class="relative w-24 h-20 shrink-0"><div class="w-full h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"><img src="${img}" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[9px] text-center text-slate-500 font-bold mt-1">${sizeKb} KB</p></div>`; });
+            imgs.forEach((img, idx) => { const sizeKb = Math.round((img.length * 3)/4/1024); container.innerHTML += `<div class="relative w-24 h-20 shrink-0"><div class="w-full h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm relative"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover"><button onclick="deleteSliderImage(${idx})" class="absolute top-1 right-1 bg-red-500/80 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] hover:bg-red-500 backdrop-blur"><i class="fa-solid fa-xmark"></i></button></div><p class="text-[9px] text-center text-slate-500 font-bold mt-1">${sizeKb} KB</p></div>`; });
         };
 
         window.handleAddInvImage = async function(e) {
@@ -594,7 +594,7 @@
         window.removeInvImage = function(idx) { tempInvImages.splice(idx, 1); renderInvImages(); };
         function renderInvImages() {
             const area = document.getElementById('invImgPreviewArea'); area.innerHTML = '';
-            tempInvImages.forEach((img, idx) => { area.innerHTML += `<div class="relative w-16 h-20 shrink-0 mb-2"><div class="w-full h-16 rounded border border-slate-200 relative bg-slate-50 flex items-center justify-center overflow-hidden"><img src="${img.url || img.dataUrl}" class="w-full h-full object-contain"><button type="button" onclick="removeInvImage(${idx})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div><p class="text-[9px] text-center font-bold text-slate-500 mt-0.5">${img.sizeKb || Math.round((img.url || img.dataUrl).length*3/4/1024)} KB</p></div>`; });
+            tempInvImages.forEach((img, idx) => { area.innerHTML += `<div class="relative w-16 h-20 shrink-0 mb-2"><div class="w-full h-16 rounded border border-slate-200 relative bg-slate-50 flex items-center justify-center overflow-hidden"><img src="${img.url || img.dataUrl}" loading="lazy" decoding="async" class="w-full h-full object-contain"><button type="button" onclick="removeInvImage(${idx})" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-times"></i></button></div><p class="text-[9px] text-center font-bold text-slate-500 mt-0.5">${img.sizeKb || Math.round((img.url || img.dataUrl).length*3/4/1024)} KB</p></div>`; });
         }
 
         window.handleInventorySubmit = async function(e) {
@@ -634,7 +634,7 @@
             
             inventoryData.forEach(item => {
                 const available = (item.totalQty || 0) - (item.issuedQty || 0);
-                const mainImg = (item.imagesArray && item.imagesArray.length > 0) ? `<img src="${item.imagesArray[0]}" class="w-16 h-16 rounded-xl object-contain p-1 bg-slate-50">` : `<div class="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fa-solid fa-box text-slate-300"></i></div>`;
+                const mainImg = (item.imagesArray && item.imagesArray.length > 0) ? `<img src="${item.imagesArray[0]}" loading="lazy" decoding="async" class="w-16 h-16 rounded-xl object-contain p-1 bg-slate-50">` : `<div class="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fa-solid fa-box text-slate-300"></i></div>`;
                 const totalUsers = requestsData.filter(r => r.itemId === item.id && (r.status === 'Given' || r.status === 'Returned')).length;
 
                 container.innerHTML += `
@@ -749,7 +749,11 @@
                     }
                 }
 
-                await updateDoc(reqRefDoc, { status: newStatus });
+                const trackingId = reqSnap.data().trackingId;
+                const batch = writeBatch(reqRefDoc.firestore);
+                batch.update(reqRefDoc, { status: newStatus });
+                if (trackingId) batch.set(doc(trackRef, trackingId), { status: newStatus }, { merge: true });
+                await batch.commit();
                 showToast(`Status updated to ${newStatus}`);
             } catch(e) { 
                 showToast("Error updating status", "error"); 
@@ -757,7 +761,15 @@
             }
         };
 
-        window.deleteRequest = function(id) { openConfirmModal("Delete Request", "Permanently remove this request?", async () => { try { await deleteDoc(doc(reqRef, id)); showToast("Request Deleted"); } catch(e){ showToast("Error", "error"); } }); };
+        window.deleteRequest = function(id) { openConfirmModal("Delete Request", "Permanently remove this request?", async () => { try {
+            const requestDoc = doc(reqRef, id);
+            const requestSnap = await getDoc(requestDoc);
+            const batch = writeBatch(requestDoc.firestore);
+            batch.delete(requestDoc);
+            if (requestSnap.exists() && requestSnap.data().trackingId) batch.delete(doc(trackRef, requestSnap.data().trackingId));
+            await batch.commit();
+            showToast("Request Deleted");
+        } catch(e){ showToast("Error", "error"); } }); };
 
         window.openRequestEdit = function(id) {
             const req = requestsData.find(r => r.id === id); if(!req) return;
