@@ -41,10 +41,10 @@
     <header class="bg-brand-deep text-white shadow-md z-30 shrink-0 relative">
         <div class="px-4 py-3 flex justify-between items-center max-w-6xl mx-auto w-full">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20"><i class="fa-solid fa-user-lock text-xl text-indigo-200"></i></div>
+                <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20 overflow-hidden shrink-0"><i id="adminHeaderIcon" class="fa-solid fa-user-lock text-xl text-indigo-200"></i><img id="adminHeaderLogo" class="hidden w-full h-full object-cover" alt="Application logo"></div>
                 <div>
-                    <h1 class="text-base font-bold tracking-wide leading-tight">Admin Portal</h1>
-                    <p class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Service Portal</p>
+                    <h1 id="adminHeaderTitle" class="text-base font-bold tracking-wide leading-tight">Admin Portal</h1>
+                    <p id="adminHeaderSub" class="text-[10px] text-indigo-200 uppercase tracking-wider font-semibold">Service Portal</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -60,7 +60,7 @@
 
         <section id="view-login" class="flex flex-col items-center justify-center h-full bg-slate-50 px-4 transition-all pb-10">
             <div class="bg-white p-7 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100 w-full max-w-sm text-center relative overflow-hidden animate-fade">
-                <div class="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 text-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-200 shadow-sm"><i class="fa-solid fa-shield-halved text-2xl"></i></div>
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-100 to-purple-100 text-brand-accent rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-200 shadow-sm overflow-hidden"><i id="adminLoginIcon" class="fa-solid fa-shield-halved text-2xl"></i><img id="adminLoginLogo" class="hidden w-full h-full object-cover" alt="Application logo"></div>
                 <h3 class="font-extrabold text-slate-900 text-xl mb-1">Authorized Access</h3>
                 <p class="text-[10px] text-slate-500 mb-6 font-bold uppercase tracking-wide">Role-Based Secure Login</p>
 
@@ -129,6 +129,10 @@
                             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wide flex items-center justify-center gap-1">Available Items <i class="fa-solid fa-circle-info text-slate-300"></i></p>
                         </div>
                     </div>
+                    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-4 rounded-3xl shadow-md flex items-center justify-between gap-3">
+                        <div><p class="text-[10px] uppercase tracking-wider text-indigo-100 font-bold">Quick workspace</p><p class="text-sm font-bold mt-1">Manage new requests or add a service.</p></div>
+                        <div class="flex gap-2 shrink-0"><button onclick="switchAdminTab('requests')" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center" aria-label="Open requests"><i class="fa-solid fa-inbox"></i></button><button onclick="switchAdminTab('inventory')" class="w-9 h-9 rounded-xl bg-white text-indigo-700 flex items-center justify-center" aria-label="Add listing"><i class="fa-solid fa-plus"></i></button></div>
+                    </div>
                 </div>
 
                 <div id="adm-sec-requests" class="hidden-view animate-fade">
@@ -192,7 +196,8 @@
                 </div>
 
                 <div id="adm-sec-stock" class="hidden-view animate-fade space-y-4">
-                    <h2 class="text-base font-bold text-slate-800">Current Stock & Usage</h2>
+                    <div class="flex items-center justify-between gap-3"><h2 class="text-base font-bold text-slate-800">Current Stock & Usage</h2><span class="text-[10px] text-slate-400">Search listings</span></div>
+                    <div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i><input id="stockSearch" type="search" oninput="renderAdminStock()" placeholder="Search item or service" class="w-full pl-8 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent"></div>
                     <div id="adminStockGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
                 </div>
 
@@ -230,6 +235,7 @@
                     </div>
                 </div>
             </div>
+            <footer class="text-center py-7 px-4 border-t border-slate-100 bg-white mt-auto pb-24"><p id="adminFooterTitle" class="text-xs font-bold text-slate-500">Service Portal</p><p id="adminFooterAddr" class="hidden-view text-[10px] text-slate-400 mt-1"></p><p class="text-[10px] text-slate-400 mt-3">Developed by <a href="https://www.instagram.com/muhammed_sanjide_p" target="_blank" rel="noopener noreferrer" class="font-bold text-brand-accent underline">HADI MAHIRI FAIZY</a></p></footer>
         </section>
 
         <!-- Mobile Bottom Navigation (Visible only on mobile) -->
@@ -357,6 +363,15 @@
         ['requestSearch', 'requestSort'].forEach(id => document.getElementById(id)?.addEventListener(id === 'requestSearch' ? 'input' : 'change', () => window.renderAdminRequests?.()));
         document.querySelectorAll('input[name="reqFilter"]').forEach(input => input.addEventListener('change', () => window.renderAdminRequests?.()));
 
+        function applyAdminBranding() {
+            const title = appSettings.title || 'Service Portal'; const sub = appSettings.sub || 'Admin Portal';
+            document.getElementById('adminHeaderTitle').innerText = title;
+            document.getElementById('adminHeaderSub').innerText = sub;
+            document.getElementById('adminFooterTitle').innerText = title;
+            const footerAddr = document.getElementById('adminFooterAddr'); footerAddr.innerText = appSettings.address || ''; footerAddr.classList.toggle('hidden-view', !appSettings.address);
+            ['adminHeaderLogo', 'adminLoginLogo'].forEach(id => { const img = document.getElementById(id); const icon = document.getElementById(id === 'adminHeaderLogo' ? 'adminHeaderIcon' : 'adminLoginIcon'); if (appSettings.logoUrl) { img.src = appSettings.logoUrl; img.classList.remove('hidden'); icon.classList.add('hidden'); } else { img.classList.add('hidden'); icon.classList.remove('hidden'); } });
+        }
+
         let adminDataListenersStarted = false;
         function startAdminDataListeners() {
             if (adminDataListenersStarted) return;
@@ -372,6 +387,7 @@
                 if(document.getElementById('setWa')) document.getElementById('setWa').value = appSettings.whatsapp || '';
                 if(document.getElementById('setAddr')) document.getElementById('setAddr').value = appSettings.address || '';
                 tempLogo = appSettings.logoUrl ? { dataUrl: appSettings.logoUrl, sizeKb: Math.round((appSettings.logoUrl.length*3)/4/1024) } : null;
+                applyAdminBranding();
                 renderLogoPreview(); renderAdminSliderPreview();
             }
         });
@@ -647,9 +663,11 @@
 
         window.renderAdminStock = function() {
             const container = document.getElementById('adminStockGrid'); container.innerHTML = '';
-            if(inventoryData.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center"><p class="text-xs text-slate-400">No stock found.</p></div>`; return; }
+            const search = (document.getElementById('stockSearch')?.value || '').trim().toLowerCase();
+            const stockItems = inventoryData.filter(item => !search || `${item.name || ''} ${item.desc || ''} ${item.itemType || ''}`.toLowerCase().includes(search));
+            if(stockItems.length === 0) { container.innerHTML = `<div class="col-span-full py-10 text-center"><p class="text-xs text-slate-400">No stock found.</p></div>`; return; }
 
-            inventoryData.forEach(item => {
+            stockItems.forEach(item => {
                 const available = (item.totalQty || 0) - (item.issuedQty || 0);
                 const mainImg = (item.imagesArray && item.imagesArray.length > 0) ? `<img src="${item.imagesArray[0]}" loading="lazy" decoding="async" class="w-16 h-16 rounded-xl object-contain p-1 bg-slate-50">` : `<div class="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center"><i class="fa-solid fa-box text-slate-300"></i></div>`;
                 const totalUsers = requestsData.filter(r => r.itemId === item.id && (r.status === 'Given' || r.status === 'Returned')).length;
@@ -741,47 +759,19 @@
             const localRequest = requestsData.find(request => request.id === reqId);
             const previousStatus = localRequest?.status;
             if (!localRequest || previousStatus === newStatus) return;
-            localRequest.status = newStatus;
-            refreshRequestBadges();
-            renderAdminRequests();
+            const item = inventoryData.find(entry => entry.id === itemId);
+            if (newStatus === 'Given' && previousStatus !== 'Given' && item && ((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) return showToast('Item is out of stock!', 'error');
+            localRequest.status = newStatus; refreshRequestBadges(); renderAdminRequests();
             try {
-                const reqRefDoc = doc(reqRef, reqId);
-                const reqSnap = await getDoc(reqRefDoc);
-                const oldStatus = reqSnap.data().status;
-
-                if (oldStatus !== newStatus && itemId) {
-                    const item = inventoryData.find(i => i.id === itemId);
-                    if(item) {
-                        // Moving TO Given -> Increase issuedQty
-                        if (newStatus === 'Given' && oldStatus !== 'Given') {
-                            if(((item.totalQty || 0) - (item.issuedQty || 0)) <= 0) {
-                                localRequest.status = previousStatus;
-                                refreshRequestBadges();
-                                renderAdminRequests();
-                                return showToast("Item is out of stock!", "error");
-                            }
-                            await updateDoc(doc(invRef, itemId), { issuedQty: increment(1) });
-                        }
-                        // Moving AWAY FROM Given -> Decrease issuedQty
-                        else if (oldStatus === 'Given' && newStatus !== 'Given') {
-                            if ((item.issuedQty || 0) > 0) {
-                                await updateDoc(doc(invRef, itemId), { issuedQty: increment(-1) });
-                            }
-                        }
-                    }
-                }
-
-                const trackingId = reqSnap.data().trackingId;
-                const batch = writeBatch(reqRefDoc.firestore);
-                batch.update(reqRefDoc, { status: newStatus });
-                if (trackingId) batch.set(doc(trackRef, trackingId), { status: newStatus }, { merge: true });
+                const requestDoc = doc(reqRef, reqId); const batch = writeBatch(requestDoc.firestore);
+                if (item && newStatus === 'Given' && previousStatus !== 'Given') batch.update(doc(invRef, itemId), { issuedQty: increment(1) });
+                if (item && previousStatus === 'Given' && newStatus !== 'Given') batch.update(doc(invRef, itemId), { issuedQty: increment(-1) });
+                batch.update(requestDoc, { status: newStatus });
+                if (localRequest.trackingId) batch.set(doc(trackRef, localRequest.trackingId), { status: newStatus }, { merge: true });
                 await batch.commit();
                 showToast(`Status updated to ${newStatus}`);
-            } catch(e) {
-                if (localRequest) localRequest.status = previousStatus;
-                refreshRequestBadges();
-                showToast("Error updating status", "error");
-                renderAdminRequests();
+            } catch (error) {
+                localRequest.status = previousStatus; refreshRequestBadges(); renderAdminRequests(); showToast('Error updating status', 'error');
             }
         };
 
